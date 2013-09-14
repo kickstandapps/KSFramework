@@ -46,8 +46,8 @@ typedef enum {
 @interface KSSlideController : UIViewController<UIGestureRecognizerDelegate>
 
 + (KSSlideController *)slideControllerWithCenterViewController:(id)centerViewController
-                                                  leftMenuViewController:(id)leftViewController
-                                                 rightMenuViewController:(id)rightViewController;
+                                            leftViewController:(id)leftViewController
+                                           rightViewController:(id)rightViewController;
 
 @property (nonatomic, strong) id centerViewController;
 @property (nonatomic, strong) UIViewController *leftViewController;
@@ -67,9 +67,9 @@ typedef enum {
 
 // shadows - content shadow only shown when showMenuOverContent = NO
 //         - menu shadows only shown when showMenuOverContent = YES
-@property (nonatomic, strong) KSShadow *contentShadow;
-@property (nonatomic, strong) KSShadow *leftMenuShadow;
-@property (nonatomic, strong) KSShadow *rightMenuShadow;
+@property (nonatomic, strong) KSViewShadow *contentShadow;
+@property (nonatomic, strong) KSViewShadow *leftMenuShadow;
+@property (nonatomic, strong) KSViewShadow *rightMenuShadow;
 
 // menu depth
 @property (nonatomic, assign) BOOL showMenuOverContent;
@@ -97,7 +97,7 @@ typedef enum {
 
 - (void)toggleLeftSideMenuCompletion:(void (^)(void))completion;
 - (void)toggleRightSideMenuCompletion:(void (^)(void))completion;
-- (void)setMenuState:(MFSideMenuState)menuState completion:(void (^)(void))completion;
+- (void)setMenuState:(KSSlideControllerState)menuState completion:(void (^)(void))completion;
 - (void)setMenuWidth:(CGFloat)menuWidth animated:(BOOL)animated;
 - (void)setLeftMenuWidth:(CGFloat)leftMenuWidth animated:(BOOL)animated;
 - (void)setRightMenuWidth:(CGFloat)rightMenuWidth animated:(BOOL)animated;

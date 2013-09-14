@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		1F381DA917E4084400427799 /* KSSlideController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F381DA817E4084400427799 /* KSSlideController.m */; };
+		1F381DAD17E40F0000427799 /* KSViewShadow.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F381DAC17E40F0000427799 /* KSViewShadow.m */; };
+		1F381DAF17E412E800427799 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F381DAE17E412E800427799 /* QuartzCore.framework */; };
+		1F381DB117E412EC00427799 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F381DB017E412EC00427799 /* Accelerate.framework */; };
 		1F96830117E4046A00C5EAB9 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F96830017E4046A00C5EAB9 /* UIKit.framework */; };
 		1F96830317E4046A00C5EAB9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F96830217E4046A00C5EAB9 /* Foundation.framework */; };
 		1F96830517E4046A00C5EAB9 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F96830417E4046A00C5EAB9 /* CoreGraphics.framework */; };
@@ -22,6 +25,10 @@
 /* Begin PBXFileReference section */
 		1F381DA717E4084400427799 /* KSSlideController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KSSlideController.h; path = ../KSSlideController/KSSlideController.h; sourceTree = "<group>"; };
 		1F381DA817E4084400427799 /* KSSlideController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KSSlideController.m; path = ../KSSlideController/KSSlideController.m; sourceTree = "<group>"; };
+		1F381DAB17E40F0000427799 /* KSViewShadow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KSViewShadow.h; path = ../KSShadow/KSViewShadow.h; sourceTree = "<group>"; };
+		1F381DAC17E40F0000427799 /* KSViewShadow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KSViewShadow.m; path = ../KSShadow/KSViewShadow.m; sourceTree = "<group>"; };
+		1F381DAE17E412E800427799 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		1F381DB017E412EC00427799 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		1F9682FD17E4046A00C5EAB9 /* KSFrameworkDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KSFrameworkDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F96830017E4046A00C5EAB9 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		1F96830217E4046A00C5EAB9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -42,6 +49,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1F381DB117E412EC00427799 /* Accelerate.framework in Frameworks */,
+				1F381DAF17E412E800427799 /* QuartzCore.framework in Frameworks */,
 				1F96830117E4046A00C5EAB9 /* UIKit.framework in Frameworks */,
 				1F96830317E4046A00C5EAB9 /* Foundation.framework in Frameworks */,
 				1F96830517E4046A00C5EAB9 /* CoreGraphics.framework in Frameworks */,
@@ -60,9 +69,19 @@
 			name = KSSlideController;
 			sourceTree = "<group>";
 		};
+		1F381DAA17E40E7000427799 /* KSShadow */ = {
+			isa = PBXGroup;
+			children = (
+				1F381DAB17E40F0000427799 /* KSViewShadow.h */,
+				1F381DAC17E40F0000427799 /* KSViewShadow.m */,
+			);
+			name = KSShadow;
+			sourceTree = "<group>";
+		};
 		1F9682F417E4046A00C5EAB9 = {
 			isa = PBXGroup;
 			children = (
+				1F381DAA17E40E7000427799 /* KSShadow */,
 				1F381DA017E4054800427799 /* KSSlideController */,
 				1F96830617E4046A00C5EAB9 /* KSFrameworkDemo */,
 				1F9682FF17E4046A00C5EAB9 /* Frameworks */,
@@ -81,6 +100,8 @@
 		1F9682FF17E4046A00C5EAB9 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1F381DB017E412EC00427799 /* Accelerate.framework */,
+				1F381DAE17E412E800427799 /* QuartzCore.framework */,
 				1F96830017E4046A00C5EAB9 /* UIKit.framework */,
 				1F96830217E4046A00C5EAB9 /* Foundation.framework */,
 				1F96830417E4046A00C5EAB9 /* CoreGraphics.framework */,
@@ -181,6 +202,7 @@
 				1F96830D17E4046A00C5EAB9 /* main.m in Sources */,
 				1F96831117E4046A00C5EAB9 /* KSAppDelegate.m in Sources */,
 				1F381DA917E4084400427799 /* KSSlideController.m in Sources */,
+				1F381DAD17E40F0000427799 /* KSViewShadow.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
