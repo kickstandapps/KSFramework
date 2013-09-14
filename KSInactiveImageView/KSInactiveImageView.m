@@ -122,33 +122,32 @@
 {
     _scale = MIN(MAX(scale,0),1);
     
-    NSInteger edgeHoldVertical = self.edgeHold >> 0;
-    NSInteger edgeHoldHorizontal = self.edgeHold >> 1;
-    
     CGRect scaledRect = CGRectMake(0, 0, scale * self.baseView.bounds.size.width, scale * self.baseView.bounds.size.height);
     
-    switch (edgeHoldVertical) {
-        case 0:
-            scaledRect.origin.y = (self.baseView.bounds.size.height - scaledRect.size.height)/2;
-            break;
-        case 1:
-            scaledRect.origin.y = 0;
-            break;
-        case 2:
-            scaledRect.origin.y = self.baseView.bounds.size.height - scaledRect.size.height;
-            break;
+    if ((self.edgeHold & KSScaleEdgeHoldTop) == KSScaleEdgeHoldTop)
+    {
+        scaledRect.origin.y  = 0;
+    }
+    else if ((self.edgeHold & KSScaleEdgeHoldBottom) == KSScaleEdgeHoldBottom)
+    {
+        scaledRect.origin.y = self.baseView.bounds.size.height - scaledRect.size.height;
+    }
+    else
+    {
+        scaledRect.origin.y = (self.baseView.bounds.size.height - scaledRect.size.height)/2;
     }
     
-    switch (edgeHoldHorizontal) {
-        case 0:
-            scaledRect.origin.x = (self.baseView.bounds.size.width - scaledRect.size.width)/2;
-            break;
-        case 1:
-            scaledRect.origin.x = 0;
-            break;
-        case 2:
-            scaledRect.origin.x = self.baseView.bounds.size.width - scaledRect.size.width;
-            break;
+    if ((self.edgeHold & KSScaleEdgeHoldLeft) == KSScaleEdgeHoldLeft)
+    {
+        scaledRect.origin.x = 0;
+    }
+    else if ((self.edgeHold & KSScaleEdgeHoldRight) == KSScaleEdgeHoldRight)
+    {
+        scaledRect.origin.x = self.baseView.bounds.size.width - scaledRect.size.width;
+    }
+    else
+    {
+        scaledRect.origin.x = (self.baseView.bounds.size.width - scaledRect.size.width)/2;
     }
     
     self.baseImageView.frame = scaledRect;

@@ -564,7 +564,7 @@ typedef enum {
     self.rightMenuShadow.alpha = MAX(0, MIN(1, -offset/20));
     
     
-    // handle scaling
+    // handle inactive views
     if (offset != 0 && self.centerOverlay.hidden == YES)
     {
         self.centerOverlay.image = [self.centerViewController view].screenshot;
@@ -594,20 +594,23 @@ typedef enum {
     
     CGFloat slideRatio = offset == 0 ? 0 : MAX(offset/self.leftMenuWidth, -offset/self.rightMenuWidth);
     
-    if (offset < 0)
+    if ((offset < 0 && self.menuSlideParallaxFactor > 0.5) || (offset > 0 && self.menuSlideParallaxFactor < 0.5))
     {
         self.centerOverlay.edgeHold = KSScaleEdgeHoldRight;
     }
     else
     {
+        //NSLog(@"1 - %d",self.centerOverlay.edgeHold);
         self.centerOverlay.edgeHold = KSScaleEdgeHoldLeft;
+        //NSLog(@"2 - %d",self.centerOverlay.edgeHold);
+
     }
     
     if (self.showMenuOverContent)
     {
-        self.centerOverlay.scale = slideRatio * self.menuSlideScaleFactor;
-        self.leftOverlay.scale = 1;
-        self.rightOverlay.scale = 1;
+        self.centerOverlay.scale = 1 - (slideRatio * (1 - self.menuSlideScaleFactor));
+        //self.leftOverlay.scale = 1;
+        //self.rightOverlay.scale = 1;
     }
     else
     {

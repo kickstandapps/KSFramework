@@ -12,8 +12,8 @@ typedef enum {
     KSScaleEdgeHoldNone     = 0,
     KSScaleEdgeHoldTop      = 1 << 0,
     KSScaleEdgeHoldBottom   = 2 << 0,
-    KSScaleEdgeHoldLeft     = 1 << 1,
-    KSScaleEdgeHoldRight    = 2 << 1,
+    KSScaleEdgeHoldLeft     = 1 << 4,
+    KSScaleEdgeHoldRight    = 2 << 4,
 } KSScaleEdgeHold;
 
 @interface KSInactiveImageView : UIView
