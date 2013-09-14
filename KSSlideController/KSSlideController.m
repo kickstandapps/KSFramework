@@ -155,7 +155,7 @@ typedef enum {
     {
         _centerContainer = [[UIView alloc] initWithFrame:self.view.bounds];
         
-        _centerContainer.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+        _centerContainer.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
         _centerContainer.backgroundColor = [UIColor clearColor];
         
         [_centerContainer addSubview:[self.centerViewController view]];
@@ -219,9 +219,9 @@ typedef enum {
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    [self.view addSubview:self.centerContainer];
     [self.view addSubview:self.leftContainer];
     [self.view addSubview:self.rightContainer];
+    [self.view addSubview:self.centerContainer];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -428,22 +428,16 @@ typedef enum {
                 self.centerOverlay.image = nil;
                 self.centerOverlay.hidden = YES;
                 [self.centerViewController view].hidden = NO;
-                self.contentShadow.shadowedView = [self.centerViewController view];
-                [self.contentShadow refresh];
                 
                 self.leftContainer.hidden = YES;
                 self.leftOverlay.image = nil;
                 self.leftOverlay.hidden = YES;
                 self.leftViewController.view.hidden = NO;
-                self.leftMenuShadow.shadowedView = self.leftContainer;
-                [self.leftMenuShadow refresh];
                 
                 self.rightContainer.hidden = YES;
                 self.rightOverlay.image = nil;
                 self.rightOverlay.hidden = YES;
                 self.rightViewController.view.hidden = NO;
-                self.rightMenuShadow.shadowedView = self.rightContainer;
-                [self.rightMenuShadow refresh];
                 
                 innerCompletion();
             }];
@@ -525,9 +519,9 @@ typedef enum {
     };
     
     if(animated) {
-        CGFloat centerViewControllerXPosition = [self.centerViewController view].frame.origin.x/(self.showMenuOverContent ? self.menuSlideParallaxFactor : 1);
+        CGFloat centerViewControllerXPosition = (self.centerViewController) ? self.centerContainer.frame.origin.x/(self.showMenuOverContent ? self.menuSlideParallaxFactor : 1) : 0;
         CGFloat duration = [self animationDurationFromStartPosition:centerViewControllerXPosition toEndPosition:offset];
-        
+                
         [UIView animateWithDuration:duration animations:^{
             CGFloat leftAlpha = self.leftMenuShadow.alpha;
             CGFloat rightAlpha = self.rightMenuShadow.alpha;
@@ -585,13 +579,13 @@ typedef enum {
         self.rightOverlay.hidden = NO;
         self.rightViewController.view.hidden = YES;
     }
-    if (offset != self.leftMenuWidth && self.leftOverlay.hidden == YES)
+    else if (offset != self.leftMenuWidth && self.leftOverlay.hidden == YES)
     {
         self.leftOverlay.image = self.leftViewController.view.screenshot;
         self.leftOverlay.hidden = NO;
         self.leftViewController.view.hidden = YES;
     }
-    if (offset != self.rightMenuWidth && self.rightOverlay.hidden == YES)
+    else if (offset != self.rightMenuWidth && self.rightOverlay.hidden == YES)
     {
         self.rightOverlay.image = self.rightViewController.view.screenshot;
         self.rightOverlay.hidden = NO;
@@ -729,13 +723,11 @@ typedef enum {
     
     if (_showMenuOverContent)
     {
-        [self.view sendSubviewToBack:[self.centerViewController view]];
-        [self.view sendSubviewToBack:self.centerOverlay];
+        [self.view sendSubviewToBack:self.centerContainer];
     }
     else
     {
-        [self.view bringSubviewToFront:[self.centerViewController view]];
-        [self.view bringSubviewToFront:self.centerOverlay];
+        [self.view bringSubviewToFront:self.centerContainer];
     }
 }
 
@@ -796,7 +788,7 @@ typedef enum {
        self.menuState != KSSlideControllerStateClosed) return YES;
     
     if([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
-        if([gestureRecognizer.view isEqual:[self.centerViewController view]])
+        if([gestureRecognizer.view isEqual:self.centerContainer])
             return [self centerViewControllerPanEnabled];
         
         if([gestureRecognizer.view isEqual:self.leftContainer] || [gestureRecognizer.view isEqual:self.rightContainer])
@@ -946,9 +938,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         // we are opening the menu
         translatedPoint.x = MIN(translatedPoint.x, 0);
     }
-    
-    [self setControllerOffset:translatedPoint.x];
-    
+
 	if(recognizer.state == UIGestureRecognizerStateEnded) {
         CGPoint velocity = [recognizer velocityInView:view];
         CGFloat finalX = translatedPoint.x + (.35*velocity.x);
