@@ -18,8 +18,8 @@
 //
 
 #import "KSSlideController.h"
-#import <QuartzCore/QuartzCore.h>
 #import "KSImageAdditions.h"
+#import "KSInactiveImageView.h"
 
 NSString * const KSSlideControllerStateNotificationEvent = @"KSSlideControllerStateNotificationEvent";
 
@@ -32,16 +32,13 @@ typedef enum {
 
 @interface KSSlideController ()
 
-@property (nonatomic, strong) UIView *leftMenuContainer;
-@property (nonatomic, strong) UIView *rightMenuContainer;
+@property (nonatomic, strong) UIView *centerContainer;
+@property (nonatomic, strong) UIView *leftContainer;
+@property (nonatomic, strong) UIView *rightContainer;
 
-@property (nonatomic, strong) UIImageView *centerImageView;
-@property (nonatomic, strong) UIImageView *leftImageView;
-@property (nonatomic, strong) UIImageView *rightImageView;
-
-@property (nonatomic, strong) UIImageView *centerBlurView;
-@property (nonatomic, strong) UIImageView *leftBlurView;
-@property (nonatomic, strong) UIImageView *rightBlurView;
+@property (nonatomic, strong) KSInactiveImageView *centerOverlay;
+@property (nonatomic, strong) KSInactiveImageView *leftOverlay;
+@property (nonatomic, strong) KSInactiveImageView *rightOverlay;
 
 @property (nonatomic, assign) CGPoint panGestureOrigin;
 @property (nonatomic, assign) CGFloat panGestureVelocity;
@@ -87,14 +84,12 @@ typedef enum {
 @synthesize leftViewController = _leftViewController;
 @synthesize centerViewController = _centerViewController;
 @synthesize rightViewController = _rightViewController;
-@synthesize leftMenuContainer = _leftMenuContainer;
-@synthesize rightMenuContainer = _rightMenuContainer;
-@synthesize centerImageView;
-@synthesize leftImageView;
-@synthesize rightImageView;
-@synthesize centerBlurView;
-@synthesize leftBlurView;
-@synthesize rightBlurView;
+@synthesize centerContainer = _centerContainer;
+@synthesize leftContainer = _leftContainer;
+@synthesize rightContainer = _rightContainer;
+@synthesize centerOverlay;
+@synthesize leftOverlay;
+@synthesize rightOverlay;
 @synthesize panMode;
 @synthesize panGestureOrigin;
 @synthesize panGestureVelocity;
@@ -144,20 +139,8 @@ typedef enum {
 }
 
 - (void)setDefaultSettings
-{
-    if (self.leftMenuContainer) return;
-    
-    self.rightMenuContainer = [[UIView alloc] init];
-    
-    self.centerImageView = [[UIImageView alloc] init];
-    self.leftImageView = [[UIImageView alloc] init];
-    self.rightImageView = [[UIImageView alloc] init];
+{        
     self.menuSlideScaleFactor = 1.0;
-    
-    self.centerBlurView = [[UIImageView alloc] init];
-    self.leftBlurView = [[UIImageView alloc] init];
-    self.rightBlurView = [[UIImageView alloc] init];
-    
     self.menuState = KSSlideControllerStateClosed;
     self.menuWidth = 270.0f;
     self.menuAnimationDefaultDuration = 0.4f;
@@ -166,71 +149,67 @@ typedef enum {
     self.viewHasAppeared = NO;
 }
 
-- (UIView *)leftMenuContainer
+- (UIView *)centerContainer
 {
-    if (!_leftMenuContainer)
+    if (!_centerContainer)
     {
-        _leftMenuContainer = [[UIView alloc] init];
-        _leftMenuContainer.frame = CGRectMake(-self.leftMenuWidth, 0, self.leftMenuWidth, self.view.bounds.size.height);
+        _centerContainer = [[UIView alloc] initWithFrame:self.view.bounds];
         
-        _leftMenuContainer.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-        _leftMenuContainer.backgroundColor = [UIColor clearColor];
+        _centerContainer.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+        _centerContainer.backgroundColor = [UIColor clearColor];
         
-        [_leftMenuContainer addSubview:self.leftViewController.view];
+        [_centerContainer addSubview:[self.centerViewController view]];
         
-        [self.view addSubview:_leftMenuContainer];
+        self.centerOverlay = [[KSInactiveImageView alloc] initWithFrame:_centerContainer.bounds];
+        self.centerOverlay.hidden = YES;
+        [_centerContainer addSubview:self.centerOverlay];
+        
+        self.contentShadow = [KSViewShadow shadowWithView:_centerContainer];
+        [self.contentShadow refresh];
     }
-    return _leftMenuContainer;
+    return _centerContainer;
 }
 
-- (UIView *)rightMenuContainer
+- (UIView *)leftContainer
 {
-    if (!_rightMenuContainer)
+    if (!_leftContainer)
     {
-        _rightMenuContainer = [[UIView alloc] init];
-        _rightMenuContainer.frame = CGRectMake(self.view.bounds.size.width, 0, self.rightMenuWidth, self.view.bounds.size.height);
+        _leftContainer = [[UIView alloc] initWithFrame:CGRectMake(-self.leftMenuWidth, 0, self.leftMenuWidth, self.view.bounds.size.height)];
         
-        _rightMenuContainer.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-        _rightMenuContainer.backgroundColor = [UIColor clearColor];
+        _leftContainer.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+        _leftContainer.backgroundColor = [UIColor clearColor];
         
-        [_rightMenuContainer addSubview:self.rightViewController.view];
+        [_leftContainer addSubview:self.leftViewController.view];
         
-        [self.view addSubview:_rightMenuContainer];
+        self.leftOverlay = [[KSInactiveImageView alloc] initWithFrame:_leftContainer.bounds];
+        self.leftOverlay.hidden = YES;
+        [_leftContainer addSubview:self.leftOverlay];
+        
+        self.leftMenuShadow = [KSViewShadow shadowWithView:_leftContainer];
+        [self.leftMenuShadow refresh];
     }
-    return _rightMenuContainer;
+    return _leftContainer;
 }
 
-
-- (void)setupMenuContainerViews {
-    self.centerImageView.image = nil;
-    self.centerImageView.contentMode = UIViewContentModeScaleToFill;
-    self.centerImageView.userInteractionEnabled = YES;
-    self.centerImageView.hidden = YES;
-    self.centerImageView.backgroundColor = [UIColor clearColor];
-    self.centerImageView.frame = self.view.bounds;
-    
-    NSData *archivedData = [NSKeyedArchiver archivedDataWithRootObject: self.centerImageView];
-    
-    self.centerBlurView = [NSKeyedUnarchiver unarchiveObjectWithData: archivedData];;
-    
-    self.leftImageView = [NSKeyedUnarchiver unarchiveObjectWithData: archivedData];
-    self.leftImageView.frame = self.leftMenuContainer.bounds;
-    
-    self.leftBlurView = [NSKeyedUnarchiver unarchiveObjectWithData: archivedData];
-    self.leftBlurView.frame = self.leftImageView.frame;
-    
-    self.rightImageView = [NSKeyedUnarchiver unarchiveObjectWithData: archivedData];
-    self.rightImageView.frame = self.rightMenuContainer.bounds;
-    
-    self.rightBlurView = [NSKeyedUnarchiver unarchiveObjectWithData: archivedData];
-    self.rightBlurView.frame = self.rightImageView.frame;
-    
-    [self.view addSubview:self.centerImageView];
-    [self.view addSubview:self.centerBlurView];
-    [self.leftMenuContainer addSubview:self.leftImageView];
-    [self.leftMenuContainer addSubview:self.leftBlurView];
-    [self.rightMenuContainer addSubview:self.rightImageView];
-    [self.rightMenuContainer addSubview:self.rightBlurView];
+- (UIView *)rightContainer
+{
+    if (!_rightContainer)
+    {
+        _rightContainer = [[UIView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width, 0, self.rightMenuWidth, self.view.bounds.size.height)];
+        
+        _rightContainer.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+        _rightContainer.backgroundColor = [UIColor clearColor];
+        
+        [_rightContainer addSubview:self.rightViewController.view];
+                
+        self.rightOverlay = [[KSInactiveImageView alloc] initWithFrame:_rightContainer.bounds];
+        self.rightOverlay.hidden = YES;
+        [_rightContainer addSubview:self.rightOverlay];
+        
+        self.rightMenuShadow = [KSViewShadow shadowWithView:_rightContainer];
+        [self.rightMenuShadow refresh];
+    }
+    return _rightContainer;
 }
 
 
@@ -239,7 +218,10 @@ typedef enum {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    [self setupMenuContainerViews];
+
+    [self.view addSubview:self.centerContainer];
+    [self.view addSubview:self.leftContainer];
+    [self.view addSubview:self.rightContainer];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -313,58 +295,44 @@ typedef enum {
 
 - (void)setLeftViewController:(UIViewController *)leftViewController {
     [self removeChildViewControllerFromContainer:_leftViewController];
-    self.leftMenuShadow = nil;
     
     _leftViewController = leftViewController;
     if(!_leftViewController) return;
     
     [self addChildViewController:_leftViewController];
-    _leftViewController.view.frame = self.leftMenuContainer.bounds;
-    [self.leftMenuContainer addSubview:_leftViewController.view];
+    _leftViewController.view.frame = self.leftContainer.bounds;
+    [self.leftContainer addSubview:_leftViewController.view];
     [_leftViewController didMoveToParentViewController:self];
     
     if(self.viewHasAppeared) [self setLeftSideMenuFrameToClosedPosition];
-    
-    self.leftMenuShadow = [KSViewShadow shadowWithView:self.leftMenuContainer];
-    [self.leftMenuShadow refresh];
 }
 
 - (void)setCenterViewController:(UIViewController *)centerViewController {
-    [self removeCenterGestureRecognizers];
     [self removeChildViewControllerFromContainer:_centerViewController];
-    self.contentShadow = nil;
     
     CGPoint origin = ((UIViewController *)_centerViewController).view.frame.origin;
     _centerViewController = centerViewController;
     if(!_centerViewController) return;
     
     [self addChildViewController:_centerViewController];
-    [self.view addSubview:[_centerViewController view]];
+    [self.centerContainer addSubview:[_centerViewController view]];
     [((UIViewController *)_centerViewController) view].frame = (CGRect){.origin = origin, .size=centerViewController.view.frame.size};
     
     [_centerViewController didMoveToParentViewController:self];
-    
-    self.contentShadow = [KSViewShadow shadowWithView:[_centerViewController view]];
-    [self.contentShadow refresh];
-    [self addCenterGestureRecognizers];
 }
 
 - (void)setRightViewController:(UIViewController *)rightViewController {
     [self removeChildViewControllerFromContainer:_rightViewController];
-    self.rightMenuShadow = nil;
     
     _rightViewController = rightViewController;
     if(!_rightViewController) return;
     
     [self addChildViewController:_rightViewController];
-    _rightViewController.view.frame = self.rightMenuContainer.bounds;
-    [self.rightMenuContainer addSubview:_rightViewController.view];
+    _rightViewController.view.frame = self.rightContainer.bounds;
+    [self.rightContainer addSubview:_rightViewController.view];
     [_rightViewController didMoveToParentViewController:self];
     
     if(self.viewHasAppeared) [self setRightSideMenuFrameToClosedPosition];
-    
-    self.rightMenuShadow = [KSViewShadow shadowWithView:self.rightMenuContainer];
-    [self.rightMenuShadow refresh];
 }
 
 - (void)removeChildViewControllerFromContainer:(UIViewController *)childViewController {
@@ -387,33 +355,10 @@ typedef enum {
 }
 
 - (void)addGestureRecognizers {
-    [self addCenterGestureRecognizers];
-    [self.leftMenuContainer addGestureRecognizer:[self panGestureRecognizer]];
-    [self.rightMenuContainer addGestureRecognizer:[self panGestureRecognizer]];
-}
-
-- (void)removeCenterGestureRecognizers
-{
-    if (self.centerViewController)
-    {
-        [[self.centerViewController view] removeGestureRecognizer:[self centerTapGestureRecognizer]];
-        [[self.centerViewController view] removeGestureRecognizer:[self panGestureRecognizer]];
-        [self.centerImageView removeGestureRecognizer:[self centerTapGestureRecognizer]];
-        [self.centerImageView removeGestureRecognizer:[self panGestureRecognizer]];
-        [self.centerBlurView removeGestureRecognizer:[self panGestureRecognizer]];
-    }
-}
-- (void)addCenterGestureRecognizers
-{
-    if (self.centerViewController)
-    {
-        [[self.centerViewController view] addGestureRecognizer:[self centerTapGestureRecognizer]];
-        [[self.centerViewController view] addGestureRecognizer:[self panGestureRecognizer]];
-        [self.centerImageView addGestureRecognizer:[self centerTapGestureRecognizer]];
-        [self.centerImageView addGestureRecognizer:[self panGestureRecognizer]];
-        [self.centerBlurView addGestureRecognizer:[self centerTapGestureRecognizer]];
-        [self.centerBlurView addGestureRecognizer:[self panGestureRecognizer]];
-    }
+    [self.centerContainer addGestureRecognizer:[self centerTapGestureRecognizer]];
+    [self.centerContainer addGestureRecognizer:[self panGestureRecognizer]];
+    [self.leftContainer addGestureRecognizer:[self panGestureRecognizer]];
+    [self.rightContainer addGestureRecognizer:[self panGestureRecognizer]];
 }
 
 - (UITapGestureRecognizer *)centerTapGestureRecognizer
@@ -480,33 +425,24 @@ typedef enum {
         case KSSlideControllerStateClosed: {
             [self sendStateEventNotification:KSSlideControllerStateEventMenuWillClose];
             [self closeSideMenuCompletion:^{
-                self.leftMenuContainer.hidden = YES;
-                self.rightMenuContainer.hidden = YES;
-                self.centerImageView.image = nil;
-                self.centerImageView.hidden = YES;
-                self.centerBlurView.image = nil;
-                self.centerBlurView.alpha = 0;
-                self.centerBlurView.hidden = YES;
+                self.centerOverlay.image = nil;
+                self.centerOverlay.hidden = YES;
                 [self.centerViewController view].hidden = NO;
                 self.contentShadow.shadowedView = [self.centerViewController view];
                 [self.contentShadow refresh];
                 
-                self.leftImageView.image = nil;
-                self.leftImageView.hidden = YES;
-                self.leftBlurView.image = nil;
-                self.leftBlurView.alpha = 1;
-                self.leftBlurView.hidden = YES;
+                self.leftContainer.hidden = YES;
+                self.leftOverlay.image = nil;
+                self.leftOverlay.hidden = YES;
                 self.leftViewController.view.hidden = NO;
-                self.leftMenuShadow.shadowedView = self.leftMenuContainer;
+                self.leftMenuShadow.shadowedView = self.leftContainer;
                 [self.leftMenuShadow refresh];
                 
-                self.rightImageView.image = nil;
-                self.rightImageView.hidden = YES;
-                self.rightBlurView.image = nil;
-                self.rightBlurView.alpha = 1;
-                self.rightBlurView.hidden = YES;
+                self.rightContainer.hidden = YES;
+                self.rightOverlay.image = nil;
+                self.rightOverlay.hidden = YES;
                 self.rightViewController.view.hidden = NO;
-                self.rightMenuShadow.shadowedView = self.rightMenuContainer;
+                self.rightMenuShadow.shadowedView = self.rightContainer;
                 [self.rightMenuShadow refresh];
                 
                 innerCompletion();
@@ -518,13 +454,10 @@ typedef enum {
             [self sendStateEventNotification:KSSlideControllerStateEventMenuWillOpen];
             [self leftMenuWillShow];
             [self openLeftSideMenuCompletion:^{
-                self.leftImageView.image = nil;
-                self.leftImageView.hidden = YES;
-                self.leftBlurView.image = nil;
-                self.leftBlurView.alpha = 0;
-                self.leftBlurView.hidden = YES;
+                self.leftOverlay.image = nil;
+                self.leftOverlay.hidden = YES;
                 self.leftViewController.view.hidden = NO;
-                self.leftMenuShadow.shadowedView = self.leftMenuContainer;
+                self.leftMenuShadow.shadowedView = self.leftContainer;
                 [self.leftMenuShadow refresh];
                 innerCompletion();
             }];
@@ -535,13 +468,10 @@ typedef enum {
             [self sendStateEventNotification:KSSlideControllerStateEventMenuWillOpen];
             [self rightMenuWillShow];
             [self openRightSideMenuCompletion:^{
-                self.rightImageView.image = nil;
-                self.rightImageView.hidden = YES;
-                self.rightBlurView.image = nil;
-                self.rightBlurView.alpha = 0;
-                self.rightBlurView.hidden = YES;
+                self.rightOverlay.image = nil;
+                self.rightOverlay.hidden = YES;
                 self.rightViewController.view.hidden = NO;
-                self.rightMenuShadow.shadowedView = self.rightMenuContainer;
+                self.rightMenuShadow.shadowedView = self.rightContainer;
                 [self.rightMenuShadow refresh];
                 innerCompletion();
             }];
@@ -554,11 +484,11 @@ typedef enum {
 
 // these callbacks are called when the menu will become visible, not neccessarily when they will OPEN
 - (void)leftMenuWillShow {
-    self.leftMenuContainer.hidden = NO;
+    self.leftContainer.hidden = NO;
 }
 
 - (void)rightMenuWillShow {
-    self.rightMenuContainer.hidden = NO;
+    self.rightContainer.hidden = NO;
 }
 
 
@@ -623,113 +553,78 @@ typedef enum {
 }
 
 - (void)setControllerOffset:(CGFloat)offset {
-    CGRect leftFrame = self.leftMenuContainer.frame;
-    CGRect centerFrame = [self.centerViewController view].frame;
-    CGRect rightFrame = self.rightMenuContainer.frame;
+    CGRect leftFrame = self.leftContainer.frame;
+    CGRect centerFrame = self.centerContainer.frame;
+    CGRect rightFrame = self.rightContainer.frame;
     
     leftFrame.origin.x = MIN(0, MAX(-self.leftMenuWidth, offset - self.leftMenuWidth)) * (self.showMenuOverContent ? 1 : self.menuSlideParallaxFactor);
     centerFrame.origin.x = offset * (self.showMenuOverContent ? self.menuSlideParallaxFactor : 1);
     rightFrame.origin.x = centerFrame.size.width - self.rightMenuWidth * (1 - (self.showMenuOverContent ? 1 : self.menuSlideParallaxFactor)) + offset * (self.showMenuOverContent ? 1 : self.menuSlideParallaxFactor);
     
     
-    self.leftMenuContainer.frame = leftFrame;
-    [self.centerViewController view].frame = centerFrame;
-    self.rightMenuContainer.frame = rightFrame;
+    self.leftContainer.frame = leftFrame;
+    self.centerContainer.frame = centerFrame;
+    self.rightContainer.frame = rightFrame;
     
     self.leftMenuShadow.alpha = MAX(0, MIN(1, offset/20));
     self.rightMenuShadow.alpha = MAX(0, MIN(1, -offset/20));
     
     
     // handle scaling
-    if (offset != 0 && self.centerImageView.hidden == YES)
+    if (offset != 0 && self.centerOverlay.hidden == YES)
     {
-        self.centerImageView.image = [self.centerViewController view].screenshot;
-        self.centerImageView.layer.sublayers = nil;
-        self.contentShadow.shadowedView = self.centerImageView;
-        [self.contentShadow refresh];
-        self.centerImageView.hidden = NO;
-        self.centerBlurView.image = [self.centerImageView.image imageWithBlur:self.contentBlurFactor];
-        self.centerBlurView.hidden = NO;
+        self.centerOverlay.image = [self.centerViewController view].screenshot;
+        self.centerOverlay.hidden = NO;
         [self.centerViewController view].hidden = YES;
         
-        self.leftImageView.image = self.leftViewController.view.screenshot;
-        self.leftImageView.layer.sublayers = nil;
-        self.leftMenuShadow.shadowedView = self.leftImageView;
-        [self.leftMenuShadow refresh];
-        self.leftImageView.hidden = NO;
-        self.leftBlurView.image = [self.leftImageView.image imageWithBlur:self.menuBlurFactor];
-        self.leftBlurView.hidden = NO;
+        self.leftOverlay.image = self.leftViewController.view.screenshot;
+        self.leftOverlay.hidden = NO;
         self.leftViewController.view.hidden = YES;
         
-        self.rightImageView.image = self.rightViewController.view.screenshot;
-        self.rightImageView.layer.sublayers = nil;
-        self.rightMenuShadow.shadowedView = self.rightImageView;
-        [self.rightMenuShadow refresh];
-        self.rightImageView.hidden = NO;
-        self.rightBlurView.image = [self.rightImageView.image imageWithBlur:self.menuBlurFactor];
-        self.rightBlurView.hidden = NO;
+        self.rightOverlay.image = self.rightViewController.view.screenshot;
+        self.rightOverlay.hidden = NO;
         self.rightViewController.view.hidden = YES;
     }
-    if (offset != self.leftMenuWidth && self.leftImageView.hidden == YES)
+    if (offset != self.leftMenuWidth && self.leftOverlay.hidden == YES)
     {
-        self.leftImageView.image = self.leftViewController.view.screenshot;
-        self.leftImageView.layer.sublayers = nil;
-        self.leftMenuShadow.shadowedView = self.leftImageView;
-        [self.leftMenuShadow refresh];
-        self.leftImageView.hidden = NO;
-        self.leftBlurView.image = [self.leftImageView.image imageWithBlur:self.menuBlurFactor];
-        self.leftBlurView.hidden = NO;
+        self.leftOverlay.image = self.leftViewController.view.screenshot;
+        self.leftOverlay.hidden = NO;
         self.leftViewController.view.hidden = YES;
     }
-    if (offset != self.rightMenuWidth && self.rightImageView.hidden == YES)
+    if (offset != self.rightMenuWidth && self.rightOverlay.hidden == YES)
     {
-        self.rightImageView.image = self.rightViewController.view.screenshot;
-        self.rightImageView.layer.sublayers = nil;
-        self.rightMenuShadow.shadowedView = self.rightImageView;
-        [self.rightMenuShadow refresh];
-        self.rightImageView.hidden = NO;
-        self.rightBlurView.image = [self.rightImageView.image imageWithBlur:self.menuBlurFactor];
-        self.rightBlurView.hidden = NO;
+        self.rightOverlay.image = self.rightViewController.view.screenshot;
+        self.rightOverlay.hidden = NO;
         self.rightViewController.view.hidden = YES;
     }
     
     CGFloat slideRatio = offset == 0 ? 0 : MAX(offset/self.leftMenuWidth, -offset/self.rightMenuWidth);
     
-    CGRect centerImageFrame = centerFrame;
-    centerImageFrame.size.width = (1 - (1 - (self.showMenuOverContent ? self.menuSlideScaleFactor : 1)) * slideRatio) * centerFrame.size.width;
-    centerImageFrame.size.height = (1 - (1 - (self.showMenuOverContent ? self.menuSlideScaleFactor : 1)) * slideRatio) * centerFrame.size.height;
-    centerImageFrame.origin.y = (1 - (self.showMenuOverContent ? self.menuSlideScaleFactor : 1)) * slideRatio * centerFrame.size.height / 2;
-    if (offset > 0)
-        centerImageFrame.origin.x = MAX(MIN((centerFrame.size.width - centerImageFrame.size.width)/2 + centerFrame.origin.x,leftFrame.origin.x + leftFrame.size.width),self.view.bounds.size.width - centerImageFrame.size.width);
-    else if (offset < 0)
-        centerImageFrame.origin.x = MIN(MAX((centerFrame.size.width - centerImageFrame.size.width)/2 + centerFrame.origin.x, rightFrame.origin.x - centerImageFrame.size.width),0);
+    if (offset < 0)
+    {
+        self.centerOverlay.edgeHold = KSScaleEdgeHoldRight;
+    }
+    else
+    {
+        self.centerOverlay.edgeHold = KSScaleEdgeHoldLeft;
+    }
     
-    self.centerImageView.frame = centerImageFrame;
+    if (self.showMenuOverContent)
+    {
+        self.centerOverlay.scale = slideRatio * self.menuSlideScaleFactor;
+        self.leftOverlay.scale = 1;
+        self.rightOverlay.scale = 1;
+    }
+    else
+    {
+        self.centerOverlay.scale = 1;
+        self.leftOverlay.scale = (1 - slideRatio) * self.menuSlideScaleFactor;
+        self.rightOverlay.scale = (1 - slideRatio) * self.menuSlideScaleFactor;
+    }
     
-    CGRect leftImageFrame = self.leftMenuContainer.bounds;
-    leftImageFrame.size.width = (1 - (1 - (self.showMenuOverContent ? 1 : self.menuSlideScaleFactor)) * (1 - slideRatio)) * leftFrame.size.width;
-    leftImageFrame.size.height = (1 - (1 - (self.showMenuOverContent ? 1 : self.menuSlideScaleFactor)) * (1 - slideRatio)) * leftFrame.size.height;
-    leftImageFrame.origin.x = 0;
-    leftImageFrame.origin.y = (leftFrame.size.height - leftImageFrame.size.height) / 2;
-    
-    self.leftImageView.frame = leftImageFrame;
-    
-    CGRect rightImageFrame = self.rightMenuContainer.bounds;
-    rightImageFrame.size.width = (1 - (1 - (self.showMenuOverContent ? 1 : self.menuSlideScaleFactor)) * (1 - slideRatio)) * rightFrame.size.width;
-    rightImageFrame.size.height = (1 - (1 - (self.showMenuOverContent ? 1 : self.menuSlideScaleFactor)) * (1 - slideRatio)) * rightFrame.size.height;
-    rightImageFrame.origin.x = rightFrame.size.width - rightImageFrame.size.width;
-    rightImageFrame.origin.y = (rightFrame.size.height - rightImageFrame.size.height) / 2;
-    
-    self.rightImageView.frame = rightImageFrame;
-    
-    self.centerBlurView.frame = centerImageFrame;
-    self.centerBlurView.alpha = 1 - pow(slideRatio - 1,2);
-    
-    self.leftBlurView.frame = leftImageFrame;
-    self.leftBlurView.alpha = 1 - (pow(slideRatio,2));
-    
-    self.rightBlurView.frame = rightImageFrame;
-    self.rightBlurView.alpha = 1 - (pow(slideRatio,2));
+    self.centerOverlay.blurIntensity = 1 - pow(slideRatio - 1,2);
+    self.leftOverlay.blurIntensity = 1 - (pow(slideRatio,2));
+    self.rightOverlay.blurIntensity = 1 - (pow(slideRatio,2));
 }
 
 - (CGFloat)animationDurationFromStartPosition:(CGFloat)startPosition toEndPosition:(CGFloat)endPosition {
@@ -752,24 +647,24 @@ typedef enum {
 
 - (void) setLeftSideMenuFrameToClosedPosition {
     if(!self.leftViewController) return;
-    CGRect leftFrame = self.leftMenuContainer.frame;
+    CGRect leftFrame = self.leftContainer.frame;
     leftFrame.size.width = self.leftMenuWidth;
     leftFrame.size.height = self.view.bounds.size.height;
     leftFrame.origin.x = -self.leftMenuWidth * (self.showMenuOverContent ? 1 : self.menuSlideParallaxFactor);
     leftFrame.origin.y = 0;
-    self.leftMenuContainer.frame = leftFrame;
-    self.leftMenuContainer.autoresizingMask = UIViewAutoresizingFlexibleRightMargin|UIViewAutoresizingFlexibleHeight;
+    self.leftContainer.frame = leftFrame;
+    self.leftContainer.autoresizingMask = UIViewAutoresizingFlexibleRightMargin|UIViewAutoresizingFlexibleHeight;
 }
 
 - (void) setRightSideMenuFrameToClosedPosition {
     if(!self.rightViewController) return;
-    CGRect rightFrame = self.rightMenuContainer.frame;
+    CGRect rightFrame = self.rightContainer.frame;
     rightFrame.size.width = self.rightMenuWidth;
     rightFrame.size.height = self.view.bounds.size.height;
     rightFrame.origin.y = 0;
     rightFrame.origin.x = self.view.bounds.size.width - self.rightMenuWidth * (1 - (self.showMenuOverContent ? 1 : self.menuSlideParallaxFactor));
-    self.rightMenuContainer.frame = rightFrame;
-    self.rightMenuContainer.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleHeight;
+    self.rightContainer.frame = rightFrame;
+    self.rightContainer.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleHeight;
 }
 
 
@@ -801,9 +696,9 @@ typedef enum {
         return;
     }
     
-    CGRect menuRect = self.leftMenuContainer.frame;
+    CGRect menuRect = self.leftContainer.frame;
     menuRect.size.width = _leftMenuWidth;
-    self.leftMenuContainer.frame = menuRect;
+    self.leftContainer.frame = menuRect;
     
     [self setControllerOffset:_leftMenuWidth animated:animated completion:nil];
 }
@@ -816,10 +711,10 @@ typedef enum {
         return;
     }
     
-    CGRect menuRect = self.rightMenuContainer.frame;
+    CGRect menuRect = self.rightContainer.frame;
     menuRect.origin.x = self.view.bounds.size.width - _rightMenuWidth;
     menuRect.size.width = _rightMenuWidth;
-    self.rightMenuContainer.frame = menuRect;
+    self.rightContainer.frame = menuRect;
     
     [self setControllerOffset:-_rightMenuWidth animated:animated completion:nil];
 }
@@ -835,20 +730,29 @@ typedef enum {
     if (_showMenuOverContent)
     {
         [self.view sendSubviewToBack:[self.centerViewController view]];
-        [self.view sendSubviewToBack:self.centerBlurView];
-        [self.view sendSubviewToBack:self.centerImageView];
+        [self.view sendSubviewToBack:self.centerOverlay];
     }
     else
     {
         [self.view bringSubviewToFront:[self.centerViewController view]];
-        [self.view bringSubviewToFront:self.centerImageView];
-        [self.view bringSubviewToFront:self.centerBlurView];
+        [self.view bringSubviewToFront:self.centerOverlay];
     }
 }
 
 - (void)setMenuSlideParallaxFactor:(CGFloat)menuSlideParallaxFactor
 {
     _menuSlideParallaxFactor = MAX(0, MIN(1, menuSlideParallaxFactor));
+    
+    if (_menuSlideParallaxFactor < 0.5)
+    {
+        self.leftOverlay.edgeHold = KSScaleEdgeHoldLeft;
+        self.rightOverlay.edgeHold = KSScaleEdgeHoldRight;
+    }
+    else
+    {
+        self.leftOverlay.edgeHold = KSScaleEdgeHoldRight;
+        self.rightOverlay.edgeHold = KSScaleEdgeHoldLeft;
+    }
 }
 
 - (void)setMenuSlideScaleFactor:(CGFloat)menuSlideScaleFactor
@@ -859,11 +763,16 @@ typedef enum {
 - (void)setMenuBlurFactor:(CGFloat)menuBlurFactor
 {
     _menuBlurFactor = MAX(0, MIN(1, menuBlurFactor));
+    
+    self.leftOverlay.blurSize = _menuBlurFactor;
+    self.rightOverlay.blurSize = _menuBlurFactor;
 }
 
 - (void)setContentBlurFactor:(CGFloat)contentBlurFactor
 {
     _contentBlurFactor = MAX(0, MIN(1, contentBlurFactor));
+    
+    self.centerOverlay.blurSize = _contentBlurFactor;
 }
 
 
@@ -890,7 +799,7 @@ typedef enum {
         if([gestureRecognizer.view isEqual:[self.centerViewController view]])
             return [self centerViewControllerPanEnabled];
         
-        if([gestureRecognizer.view isEqual:self.leftMenuContainer] || [gestureRecognizer.view isEqual:self.rightMenuContainer])
+        if([gestureRecognizer.view isEqual:self.leftContainer] || [gestureRecognizer.view isEqual:self.rightContainer])
             return [self sideMenuPanEnabled];
         
         // pan gesture is attached to a custom view
