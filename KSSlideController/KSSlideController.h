@@ -50,7 +50,7 @@ typedef enum {
 // Add property to UIViewControllers to identify parent KSSlideController
 @interface UIViewController (KSSlideController)
 
-@property(nonatomic,readonly,retain) KSSlideController *slideController;
+@property(nonatomic, readonly, retain) KSSlideController *slideController;
 
 @end
 

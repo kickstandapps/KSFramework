@@ -23,6 +23,11 @@
 
 - (UIImage *)imageWithBlur:(CGFloat)blur
 {
+    if (blur == 0)
+    {
+        return self;
+    }
+    
     if (blur < 0.f || blur > 1.f)
     {
         blur = 0.5f;
