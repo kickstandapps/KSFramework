@@ -31,7 +31,7 @@
 + (KSViewShadow *)shadowWithView:(UIView *)shadowedView;
 + (KSViewShadow *)shadowWithColor:(UIColor *)color radius:(CGFloat)radius opacity:(CGFloat)opacity;
 
-- (void)draw;
+- (void)refresh;
 - (void)shadowedViewWillRotate;
 - (void)shadowedViewDidRotate;
 

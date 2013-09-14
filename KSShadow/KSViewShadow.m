@@ -30,13 +30,15 @@
 @synthesize shadowedView;
 @synthesize alpha = _alpha;
 
-+ (KSViewShadow *)shadowWithView:(UIView *)shadowedView {
++ (KSViewShadow *)shadowWithView:(UIView *)shadowedView
+{
     KSViewShadow *shadow = [KSViewShadow shadowWithColor:[UIColor blackColor] radius:10.0f opacity:0.75f];
     shadow.shadowedView = shadowedView;
     return shadow;
 }
 
-+ (KSViewShadow *)shadowWithColor:(UIColor *)color radius:(CGFloat)radius opacity:(CGFloat)opacity {
++ (KSViewShadow *)shadowWithColor:(UIColor *)color radius:(CGFloat)radius opacity:(CGFloat)opacity
+{
     KSViewShadow *shadow = [KSViewShadow new];
     shadow.color = color;
     shadow.radius = radius;
@@ -44,9 +46,11 @@
     return shadow;
 }
 
-- (id)init {
+- (id)init
+{
     self = [super init];
-    if(self) {
+    if (self)
+    {
         self.color = [UIColor blackColor];
         self.opacity = 0.75f;
         self.radius = 10.0f;
@@ -60,43 +64,54 @@
 #pragma mark -
 #pragma mark - Property Setters
 
-- (void)setEnabled:(BOOL)shadowEnabled {
+- (void)setEnabled:(BOOL)shadowEnabled
+{
     _enabled = shadowEnabled;
-    [self draw];
+    [self refresh];
 }
 
-- (void)setRadius:(CGFloat)shadowRadius {
+- (void)setRadius:(CGFloat)shadowRadius
+{
     _radius = shadowRadius;
-    [self draw];
+    [self refresh];
 }
 
-- (void)setColor:(UIColor *)shadowColor {
+- (void)setColor:(UIColor *)shadowColor
+{
     _color = shadowColor;
-    [self draw];
+    [self refresh];
 }
 
-- (void)setOpacity:(CGFloat)shadowOpacity {
+- (void)setOpacity:(CGFloat)shadowOpacity
+{
     _opacity = shadowOpacity;
-    [self draw];
+    [self refresh];
 }
 
-- (void)setAlpha:(CGFloat)shadowAlpha {
+- (void)setAlpha:(CGFloat)shadowAlpha
+{
     _alpha = shadowAlpha;
-    [self draw];
+    [self refresh];
 }
 
 #pragma mark -
-#pragma mark - Drawing
+#pragma mark - refreshing
 
-- (void)draw {
-    if(_enabled) {
+- (void)refresh
+{
+    if(_enabled)
+    {
         [self show];
-    } else {
+    }
+    
+    else
+    {
         [self hide];
     }
 }
 
-- (void)show {
+- (void)show
+{
     CGRect pathRect = self.shadowedView.bounds;
     pathRect.size = self.shadowedView.frame.size;
     self.shadowedView.layer.masksToBounds = NO;
@@ -107,7 +122,8 @@
     self.shadowedView.layer.rasterizationScale = [[UIScreen mainScreen] scale];
 }
 
-- (void)hide {
+- (void)hide
+{
     self.shadowedView.layer.shadowOpacity = 0.0f;
     self.shadowedView.layer.shadowRadius = 0.0f;
 }
@@ -116,13 +132,15 @@
 #pragma mark -
 #pragma mark - ShadowedView Rotation
 
-- (void)shadowedViewWillRotate {
+- (void)shadowedViewWillRotate
+{
     self.shadowedView.layer.shadowPath = nil;
     self.shadowedView.layer.shouldRasterize = YES;
 }
 
-- (void)shadowedViewDidRotate {
-    [self draw];
+- (void)shadowedViewDidRotate
+{
+    [self refresh];
     self.shadowedView.layer.shouldRasterize = NO;
 }
 

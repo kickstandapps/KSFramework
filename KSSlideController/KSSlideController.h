@@ -43,6 +43,20 @@ typedef enum {
 } KSSlideControllerStateEvent;
 
 
+#pragma mark - UIViewController + KSSlideController
+
+@class KSSlideController;
+
+// Add property to UIViewControllers to identify parent KSSlideController
+@interface UIViewController (KSSlideController)
+
+@property(nonatomic,readonly,retain) KSSlideController *slideController;
+
+@end
+
+
+#pragma mark - KSSlideController
+
 @interface KSSlideController : UIViewController<UIGestureRecognizerDelegate>
 
 + (KSSlideController *)slideControllerWithCenterViewController:(id)centerViewController

@@ -11,6 +11,7 @@
 		1F381DAD17E40F0000427799 /* KSViewShadow.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F381DAC17E40F0000427799 /* KSViewShadow.m */; };
 		1F381DAF17E412E800427799 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F381DAE17E412E800427799 /* QuartzCore.framework */; };
 		1F381DB117E412EC00427799 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F381DB017E412EC00427799 /* Accelerate.framework */; };
+		1F381DBB17E4168500427799 /* KSImageAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F381DBA17E4168500427799 /* KSImageAdditions.m */; };
 		1F96830117E4046A00C5EAB9 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F96830017E4046A00C5EAB9 /* UIKit.framework */; };
 		1F96830317E4046A00C5EAB9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F96830217E4046A00C5EAB9 /* Foundation.framework */; };
 		1F96830517E4046A00C5EAB9 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F96830417E4046A00C5EAB9 /* CoreGraphics.framework */; };
@@ -29,6 +30,8 @@
 		1F381DAC17E40F0000427799 /* KSViewShadow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KSViewShadow.m; path = ../KSShadow/KSViewShadow.m; sourceTree = "<group>"; };
 		1F381DAE17E412E800427799 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		1F381DB017E412EC00427799 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		1F381DB917E4168500427799 /* KSImageAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KSImageAdditions.h; path = ../KSImageAdditions/KSImageAdditions.h; sourceTree = "<group>"; };
+		1F381DBA17E4168500427799 /* KSImageAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KSImageAdditions.m; path = ../KSImageAdditions/KSImageAdditions.m; sourceTree = "<group>"; };
 		1F9682FD17E4046A00C5EAB9 /* KSFrameworkDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KSFrameworkDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F96830017E4046A00C5EAB9 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		1F96830217E4046A00C5EAB9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -78,9 +81,19 @@
 			name = KSShadow;
 			sourceTree = "<group>";
 		};
+		1F381DB217E413A000427799 /* KSImageAdditions */ = {
+			isa = PBXGroup;
+			children = (
+				1F381DB917E4168500427799 /* KSImageAdditions.h */,
+				1F381DBA17E4168500427799 /* KSImageAdditions.m */,
+			);
+			name = KSImageAdditions;
+			sourceTree = "<group>";
+		};
 		1F9682F417E4046A00C5EAB9 = {
 			isa = PBXGroup;
 			children = (
+				1F381DB217E413A000427799 /* KSImageAdditions */,
 				1F381DAA17E40E7000427799 /* KSShadow */,
 				1F381DA017E4054800427799 /* KSSlideController */,
 				1F96830617E4046A00C5EAB9 /* KSFrameworkDemo */,
@@ -203,6 +216,7 @@
 				1F96831117E4046A00C5EAB9 /* KSAppDelegate.m in Sources */,
 				1F381DA917E4084400427799 /* KSSlideController.m in Sources */,
 				1F381DAD17E40F0000427799 /* KSViewShadow.m in Sources */,
+				1F381DBB17E4168500427799 /* KSImageAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

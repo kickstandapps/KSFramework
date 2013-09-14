@@ -19,7 +19,7 @@
 
 #import "KSSlideController.h"
 #import <QuartzCore/QuartzCore.h>
-#import <Accelerate/Accelerate.h>
+#import "KSImageAdditions.h"
 
 NSString * const KSSlideControllerStateNotificationEvent = @"KSSlideControllerStateNotificationEvent";
 
@@ -29,17 +29,6 @@ typedef enum {
     KSSlideControllerPanDirectionRight
 } KSSlideControllerPanDirection;
 
-@interface UIView (Screenshot)
-- (UIImage *)screenshot;
-@end
-
-@interface UIScrollView (Screenshot)
-- (UIImage *)screenshot;
-@end
-
-@interface UIImage (BoxBlur)
-- (UIImage*)imageWithBlur:(CGFloat)blur;
-@end
 
 @interface KSSlideController ()
 
@@ -59,15 +48,47 @@ typedef enum {
 @property (nonatomic, assign) KSSlideControllerPanDirection panDirection;
 
 @property (nonatomic, assign) BOOL viewHasAppeared;
+
 @end
+
+
+#pragma mark - UIViewController + KSSlideController
+#pragma mark -
+
+@implementation UIViewController (KSSlideController)
+
+@dynamic slideController;
+
+- (KSSlideController *)slideController
+{
+    id containerView = self;
+    while (![containerView isKindOfClass:[KSSlideController class]] && containerView)
+    {
+        if ([containerView respondsToSelector:@selector(parentViewController)])
+        {
+            containerView = [containerView parentViewController];
+        }
+        if ([containerView respondsToSelector:@selector(splitViewController)] && !containerView)
+        {
+            containerView = [containerView splitViewController];
+        }
+    }
+    return containerView;
+}
+
+@end
+
+
+#pragma mark - KSSlideController
+#pragma mark -
 
 @implementation KSSlideController
 
 @synthesize leftViewController = _leftViewController;
 @synthesize centerViewController = _centerViewController;
 @synthesize rightViewController = _rightViewController;
-@synthesize leftMenuContainer;
-@synthesize rightMenuContainer;
+@synthesize leftMenuContainer = _leftMenuContainer;
+@synthesize rightMenuContainer = _rightMenuContainer;
 @synthesize centerImageView;
 @synthesize leftImageView;
 @synthesize rightImageView;
@@ -93,14 +114,13 @@ typedef enum {
 @synthesize rightMenuShadow;
 
 
-#pragma mark -
 #pragma mark - Initialization
 
 + (KSSlideController *)slideControllerWithCenterViewController:(id)centerViewController
                                             leftViewController:(id)leftViewController
                                            rightViewController:(id)rightViewController
 {
-    KSSlideController *controller = [KSSlideController new];
+    KSSlideController *controller = [[KSSlideController alloc] init];
     controller.leftViewController = leftViewController;
     controller.centerViewController = centerViewController;
     controller.rightViewController = rightViewController;
@@ -109,22 +129,24 @@ typedef enum {
 
 - (id) init {
     self = [super init];
-    if(self) {
+    if(self)
+    {
         [self setDefaultSettings];
     }
     return self;
 }
 
-- (id)initWithCoder:(NSCoder *)inCoder {
+- (id)initWithCoder:(NSCoder *)inCoder
+{
     id coder = [super initWithCoder:inCoder];
     [self setDefaultSettings];
     return coder;
 }
 
-- (void)setDefaultSettings {
+- (void)setDefaultSettings
+{
     if (self.leftMenuContainer) return;
     
-    self.leftMenuContainer = [[UIView alloc] init];
     self.rightMenuContainer = [[UIView alloc] init];
     
     self.centerImageView = [[UIImageView alloc] init];
@@ -144,26 +166,42 @@ typedef enum {
     self.viewHasAppeared = NO;
 }
 
+- (UIView *)leftMenuContainer
+{
+    if (!_leftMenuContainer)
+    {
+        _leftMenuContainer = [[UIView alloc] init];
+        _leftMenuContainer.frame = CGRectMake(-self.leftMenuWidth, 0, self.leftMenuWidth, self.view.bounds.size.height);
+        
+        _leftMenuContainer.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+        _leftMenuContainer.backgroundColor = [UIColor clearColor];
+        
+        [_leftMenuContainer addSubview:self.leftViewController.view];
+        
+        [self.view addSubview:_leftMenuContainer];
+    }
+    return _leftMenuContainer;
+}
+
+- (UIView *)rightMenuContainer
+{
+    if (!_rightMenuContainer)
+    {
+        _rightMenuContainer = [[UIView alloc] init];
+        _rightMenuContainer.frame = CGRectMake(self.view.bounds.size.width, 0, self.rightMenuWidth, self.view.bounds.size.height);
+        
+        _rightMenuContainer.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+        _rightMenuContainer.backgroundColor = [UIColor clearColor];
+        
+        [_rightMenuContainer addSubview:self.rightViewController.view];
+        
+        [self.view addSubview:_rightMenuContainer];
+    }
+    return _rightMenuContainer;
+}
+
+
 - (void)setupMenuContainerViews {
-    if (self.leftMenuContainer.superview && self.rightMenuContainer.superview) return;
-    self.leftMenuContainer.frame = CGRectMake(-self.leftMenuWidth, 0, self.leftMenuWidth, self.view.bounds.size.height);
-    [self.view addSubview:self.leftMenuContainer];
-    self.leftMenuContainer.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-    self.leftMenuContainer.backgroundColor = [UIColor clearColor];
-    
-    self.rightMenuContainer.frame = CGRectMake(self.view.bounds.size.width, 0, self.rightMenuWidth, self.view.bounds.size.height);
-    [self.view addSubview:self.rightMenuContainer];
-    self.rightMenuContainer.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-    self.rightMenuContainer.backgroundColor = [UIColor clearColor];
-    
-    if(self.leftViewController && !self.leftViewController.view.superview) {
-        [self.leftMenuContainer addSubview:self.leftViewController.view];
-    }
-    
-    if(self.rightViewController && !self.rightViewController.view.superview) {
-        [self.rightMenuContainer addSubview:self.rightViewController.view];
-    }
-    
     self.centerImageView.image = nil;
     self.centerImageView.contentMode = UIViewContentModeScaleToFill;
     self.centerImageView.userInteractionEnabled = YES;
@@ -211,9 +249,9 @@ typedef enum {
         [self setLeftSideMenuFrameToClosedPosition];
         [self setRightSideMenuFrameToClosedPosition];
         [self addGestureRecognizers];
-        [self.contentShadow draw];
-        [self.leftMenuShadow draw];
-        [self.rightMenuShadow draw];
+        [self.contentShadow refresh];
+        [self.leftMenuShadow refresh];
+        [self.rightMenuShadow refresh];
         
         self.viewHasAppeared = YES;
     }
@@ -288,7 +326,7 @@ typedef enum {
     if(self.viewHasAppeared) [self setLeftSideMenuFrameToClosedPosition];
     
     self.leftMenuShadow = [KSViewShadow shadowWithView:self.leftMenuContainer];
-    [self.leftMenuShadow draw];
+    [self.leftMenuShadow refresh];
 }
 
 - (void)setCenterViewController:(UIViewController *)centerViewController {
@@ -307,7 +345,7 @@ typedef enum {
     [_centerViewController didMoveToParentViewController:self];
     
     self.contentShadow = [KSViewShadow shadowWithView:[_centerViewController view]];
-    [self.contentShadow draw];
+    [self.contentShadow refresh];
     [self addCenterGestureRecognizers];
 }
 
@@ -326,7 +364,7 @@ typedef enum {
     if(self.viewHasAppeared) [self setRightSideMenuFrameToClosedPosition];
     
     self.rightMenuShadow = [KSViewShadow shadowWithView:self.rightMenuContainer];
-    [self.rightMenuShadow draw];
+    [self.rightMenuShadow refresh];
 }
 
 - (void)removeChildViewControllerFromContainer:(UIViewController *)childViewController {
@@ -451,7 +489,7 @@ typedef enum {
                 self.centerBlurView.hidden = YES;
                 [self.centerViewController view].hidden = NO;
                 self.contentShadow.shadowedView = [self.centerViewController view];
-                [self.contentShadow draw];
+                [self.contentShadow refresh];
                 
                 self.leftImageView.image = nil;
                 self.leftImageView.hidden = YES;
@@ -460,7 +498,7 @@ typedef enum {
                 self.leftBlurView.hidden = YES;
                 self.leftViewController.view.hidden = NO;
                 self.leftMenuShadow.shadowedView = self.leftMenuContainer;
-                [self.leftMenuShadow draw];
+                [self.leftMenuShadow refresh];
                 
                 self.rightImageView.image = nil;
                 self.rightImageView.hidden = YES;
@@ -469,7 +507,7 @@ typedef enum {
                 self.rightBlurView.hidden = YES;
                 self.rightViewController.view.hidden = NO;
                 self.rightMenuShadow.shadowedView = self.rightMenuContainer;
-                [self.rightMenuShadow draw];
+                [self.rightMenuShadow refresh];
                 
                 innerCompletion();
             }];
@@ -487,7 +525,7 @@ typedef enum {
                 self.leftBlurView.hidden = YES;
                 self.leftViewController.view.hidden = NO;
                 self.leftMenuShadow.shadowedView = self.leftMenuContainer;
-                [self.leftMenuShadow draw];
+                [self.leftMenuShadow refresh];
                 innerCompletion();
             }];
             break;
@@ -504,7 +542,7 @@ typedef enum {
                 self.rightBlurView.hidden = YES;
                 self.rightViewController.view.hidden = NO;
                 self.rightMenuShadow.shadowedView = self.rightMenuContainer;
-                [self.rightMenuShadow draw];
+                [self.rightMenuShadow refresh];
                 innerCompletion();
             }];
             break;
@@ -608,7 +646,7 @@ typedef enum {
         self.centerImageView.image = [self.centerViewController view].screenshot;
         self.centerImageView.layer.sublayers = nil;
         self.contentShadow.shadowedView = self.centerImageView;
-        [self.contentShadow draw];
+        [self.contentShadow refresh];
         self.centerImageView.hidden = NO;
         self.centerBlurView.image = [self.centerImageView.image imageWithBlur:self.contentBlurFactor];
         self.centerBlurView.hidden = NO;
@@ -617,7 +655,7 @@ typedef enum {
         self.leftImageView.image = self.leftViewController.view.screenshot;
         self.leftImageView.layer.sublayers = nil;
         self.leftMenuShadow.shadowedView = self.leftImageView;
-        [self.leftMenuShadow draw];
+        [self.leftMenuShadow refresh];
         self.leftImageView.hidden = NO;
         self.leftBlurView.image = [self.leftImageView.image imageWithBlur:self.menuBlurFactor];
         self.leftBlurView.hidden = NO;
@@ -626,7 +664,7 @@ typedef enum {
         self.rightImageView.image = self.rightViewController.view.screenshot;
         self.rightImageView.layer.sublayers = nil;
         self.rightMenuShadow.shadowedView = self.rightImageView;
-        [self.rightMenuShadow draw];
+        [self.rightMenuShadow refresh];
         self.rightImageView.hidden = NO;
         self.rightBlurView.image = [self.rightImageView.image imageWithBlur:self.menuBlurFactor];
         self.rightBlurView.hidden = NO;
@@ -637,7 +675,7 @@ typedef enum {
         self.leftImageView.image = self.leftViewController.view.screenshot;
         self.leftImageView.layer.sublayers = nil;
         self.leftMenuShadow.shadowedView = self.leftImageView;
-        [self.leftMenuShadow draw];
+        [self.leftMenuShadow refresh];
         self.leftImageView.hidden = NO;
         self.leftBlurView.image = [self.leftImageView.image imageWithBlur:self.menuBlurFactor];
         self.leftBlurView.hidden = NO;
@@ -648,7 +686,7 @@ typedef enum {
         self.rightImageView.image = self.rightViewController.view.screenshot;
         self.rightImageView.layer.sublayers = nil;
         self.rightMenuShadow.shadowedView = self.rightImageView;
-        [self.rightMenuShadow draw];
+        [self.rightMenuShadow refresh];
         self.rightImageView.hidden = NO;
         self.rightBlurView.image = [self.rightImageView.image imageWithBlur:self.menuBlurFactor];
         self.rightBlurView.hidden = NO;
@@ -1048,145 +1086,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             viewController.view.userInteractionEnabled = (self.menuState == KSSlideControllerStateClosed);
         }
     }
-}
-
-@end
-
-
-#pragma mark - UIView + Screenshot
-
-@implementation UIView (Screenshot)
-
-- (UIImage*)screenshot {
-    UIGraphicsBeginImageContext(self.bounds.size);
-    [self.layer renderInContext:UIGraphicsGetCurrentContext()];
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    
-    // hack, helps w/ our colors when blurring
-    NSData *imageData = UIImageJPEGRepresentation(image, 1); // convert to jpeg
-    image = [UIImage imageWithData:imageData];
-    
-    return image;
-}
-
-@end
-
-
-#pragma mark - UIScrollView + Screenshot
-
-@implementation UIScrollView (Screenshot)
-
--(UIImage *)screenshot {
-    // Freeze scrollview
-    CGPoint offset = self.contentOffset;
-    [self setContentOffset:offset animated:NO];
-    
-    CGSize pageSize = self.bounds.size;
-    UIGraphicsBeginImageContext(pageSize);
-    
-    CGContextRef resizedContext = UIGraphicsGetCurrentContext();
-    CGContextTranslateCTM(resizedContext, -self.contentOffset.x, -self.contentOffset.y);
-    [self.layer renderInContext:resizedContext];
-    UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    
-    UIGraphicsEndImageContext();
-    
-    // hack, helps w/ our colors when blurring
-    NSData *imageData = UIImageJPEGRepresentation(image, 1); // convert to jpeg
-    image = [UIImage imageWithData:imageData];
-    
-    return image;
-}
-
-@end
-
-@implementation UIImage (BoxBlur)
-
-// Copyright (c) Jake Gunderson
-// http://indieambitions.com/idevblogaday/perform-blur-vimage-accelerate-framework-tutorial/
-
-/* blur the current image with a box blur algoritm */
-- (UIImage*)imageWithBlur:(CGFloat)blur
-{
-    if (blur < 0.f || blur > 1.f) {
-        blur = 0.5f;
-    }
-    int boxSize = (int)(blur * 40);
-    boxSize = boxSize - (boxSize % 2) + 1;
-    
-    //Get CGImage from UIImage
-    CGImageRef img = self.CGImage;
-    
-    //setup variables
-    vImage_Buffer inBuffer, outBuffer;
-    
-    vImage_Error error;
-    
-    void *pixelBuffer;
-    
-    //create vImage_Buffer with data from CGImageRef
-    
-    //These two lines get get the data from the CGImage
-    CGDataProviderRef inProvider = CGImageGetDataProvider(img);
-    CFDataRef inBitmapData = CGDataProviderCopyData(inProvider);
-    
-    //The next three lines set up the inBuffer object based on the attributes of the CGImage
-    inBuffer.width = CGImageGetWidth(img);
-    inBuffer.height = CGImageGetHeight(img);
-    inBuffer.rowBytes = CGImageGetBytesPerRow(img);
-    
-    //This sets the pointer to the data for the inBuffer object
-    inBuffer.data = (void*)CFDataGetBytePtr(inBitmapData);
-    
-    //create vImage_Buffer for output
-    
-    //allocate a buffer for the output image and check if it exists in the next three lines
-    pixelBuffer = malloc(CGImageGetBytesPerRow(img) * CGImageGetHeight(img));
-    
-    if(pixelBuffer == NULL)
-        NSLog(@"No pixelbuffer");
-    
-    //set up the output buffer object based on the same dimensions as the input image
-    outBuffer.data = pixelBuffer;
-    outBuffer.width = CGImageGetWidth(img);
-    outBuffer.height = CGImageGetHeight(img);
-    outBuffer.rowBytes = CGImageGetBytesPerRow(img);
-    
-    //perform convolution - this is the call for our type of data
-    error = vImageBoxConvolve_ARGB8888(&inBuffer, &outBuffer, NULL, 0, 0, boxSize, boxSize, NULL, kvImageEdgeExtend);
-    
-    //check for an error in the call to perform the convolution
-    if (error) {
-        NSLog(@"error from convolution %ld", error);
-    }
-    
-    //create CGImageRef from vImage_Buffer output
-    //1 - CGBitmapContextCreateImage -
-    
-    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-    
-    CGContextRef ctx = CGBitmapContextCreate(outBuffer.data,
-                                             outBuffer.width,
-                                             outBuffer.height,
-                                             8,
-                                             outBuffer.rowBytes,
-                                             colorSpace,
-                                             kCGImageAlphaNoneSkipLast);
-    CGImageRef imageRef = CGBitmapContextCreateImage (ctx);
-    
-    UIImage *returnImage = [UIImage imageWithCGImage:imageRef];
-    
-    //clean up
-    CGContextRelease(ctx);
-    CGColorSpaceRelease(colorSpace);
-    
-    free(pixelBuffer);
-    CFRelease(inBitmapData);
-    
-    CGImageRelease(imageRef);
-    
-    return returnImage;
 }
 
 @end
