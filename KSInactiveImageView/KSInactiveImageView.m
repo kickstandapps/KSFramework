@@ -73,6 +73,7 @@
     {
         _baseImageView = [[UIImageView alloc] initWithFrame:self.baseView.bounds];
         _baseImageView.backgroundColor = [UIColor clearColor];
+        _baseImageView.userInteractionEnabled = YES;
         _baseImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         
         _baseImageView.image = self.image;
@@ -86,6 +87,7 @@
     {
         _blurredImageView = [[UIImageView alloc] initWithFrame:self.baseView.bounds];
         _blurredImageView.backgroundColor = [UIColor clearColor];
+        _blurredImageView.userInteractionEnabled = YES;
         _blurredImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         
         _blurredImageView.image = self.image;

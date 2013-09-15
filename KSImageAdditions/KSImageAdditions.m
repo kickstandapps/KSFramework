@@ -142,25 +142,23 @@
 
 -(UIImage *)screenshot
 {
-    NSLog(@"here");
     // Freeze scrollview
     CGPoint offset = self.contentOffset;
     [self setContentOffset:offset animated:NO];
-    NSLog(@"here1");
+
     CGSize pageSize = self.bounds.size;
     UIGraphicsBeginImageContext(pageSize);
-    NSLog(@"here2");
+
     CGContextRef resizedContext = UIGraphicsGetCurrentContext();
     CGContextTranslateCTM(resizedContext, -self.contentOffset.x, -self.contentOffset.y);
     [self.layer renderInContext:resizedContext];
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
-    NSLog(@"here3");
+
     UIGraphicsEndImageContext();
     
     // hack, helps w/ our colors when blurring
     NSData *imageData = UIImageJPEGRepresentation(image, 1); // convert to jpeg
     image = [UIImage imageWithData:imageData];
-    NSLog(@"there");
     
     return image;
 }
