@@ -14,14 +14,13 @@
 		1F381DBB17E4168500427799 /* KSImageAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F381DBA17E4168500427799 /* KSImageAdditions.m */; };
 		1F381DBF17E41D7800427799 /* KSInactiveImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F381DBE17E41D7800427799 /* KSInactiveImageView.m */; };
 		1F381DC417E4448B00427799 /* SideMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F381DC117E4435C00427799 /* SideMenuViewController.m */; };
-		1F381DC517E4448B00427799 /* DemoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F381DC317E4435C00427799 /* DemoViewController.m */; };
-		1F381DC717E4454700427799 /* DemoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1F381DC617E4454700427799 /* DemoViewController.xib */; };
-		1F381DC817E4455300427799 /* DemoViewController.xib in Sources */ = {isa = PBXBuildFile; fileRef = 1F381DC617E4454700427799 /* DemoViewController.xib */; };
 		1F381DCE17E445E900427799 /* back-arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 1F381DC917E445E900427799 /* back-arrow.png */; };
 		1F381DCF17E445E900427799 /* back-arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1F381DCA17E445E900427799 /* back-arrow@2x.png */; };
 		1F381DD017E445E900427799 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1F381DCB17E445E900427799 /* Default-568h@2x.png */; };
 		1F381DD117E445E900427799 /* menu-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 1F381DCC17E445E900427799 /* menu-icon.png */; };
 		1F381DD217E445E900427799 /* menu-icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1F381DCD17E445E900427799 /* menu-icon@2x.png */; };
+		1F381DD617E60ADA00427799 /* DemoSlideViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F381DD417E60AD900427799 /* DemoSlideViewController.m */; };
+		1F381DD717E60ADA00427799 /* DemoSlideViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1F381DD517E60AD900427799 /* DemoSlideViewController.xib */; };
 		1F96830117E4046A00C5EAB9 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F96830017E4046A00C5EAB9 /* UIKit.framework */; };
 		1F96830317E4046A00C5EAB9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F96830217E4046A00C5EAB9 /* Foundation.framework */; };
 		1F96830517E4046A00C5EAB9 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F96830417E4046A00C5EAB9 /* CoreGraphics.framework */; };
@@ -43,14 +42,14 @@
 		1F381DBE17E41D7800427799 /* KSInactiveImageView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KSInactiveImageView.m; path = ../KSInactiveImageView/KSInactiveImageView.m; sourceTree = "<group>"; };
 		1F381DC017E4435C00427799 /* SideMenuViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SideMenuViewController.h; sourceTree = "<group>"; };
 		1F381DC117E4435C00427799 /* SideMenuViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SideMenuViewController.m; sourceTree = "<group>"; };
-		1F381DC217E4435C00427799 /* DemoViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DemoViewController.h; sourceTree = "<group>"; };
-		1F381DC317E4435C00427799 /* DemoViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DemoViewController.m; sourceTree = "<group>"; };
-		1F381DC617E4454700427799 /* DemoViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DemoViewController.xib; sourceTree = "<group>"; };
 		1F381DC917E445E900427799 /* back-arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back-arrow.png"; sourceTree = "<group>"; };
 		1F381DCA17E445E900427799 /* back-arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back-arrow@2x.png"; sourceTree = "<group>"; };
 		1F381DCB17E445E900427799 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		1F381DCC17E445E900427799 /* menu-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu-icon.png"; sourceTree = "<group>"; };
 		1F381DCD17E445E900427799 /* menu-icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu-icon@2x.png"; sourceTree = "<group>"; };
+		1F381DD317E60AD900427799 /* DemoSlideViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoSlideViewController.h; sourceTree = "<group>"; };
+		1F381DD417E60AD900427799 /* DemoSlideViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoSlideViewController.m; sourceTree = "<group>"; };
+		1F381DD517E60AD900427799 /* DemoSlideViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DemoSlideViewController.xib; sourceTree = "<group>"; };
 		1F9682FD17E4046A00C5EAB9 /* KSFrameworkDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KSFrameworkDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F96830017E4046A00C5EAB9 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		1F96830217E4046A00C5EAB9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -153,11 +152,11 @@
 			children = (
 				1F96830F17E4046A00C5EAB9 /* KSAppDelegate.h */,
 				1F96831017E4046A00C5EAB9 /* KSAppDelegate.m */,
+				1F381DD317E60AD900427799 /* DemoSlideViewController.h */,
+				1F381DD417E60AD900427799 /* DemoSlideViewController.m */,
+				1F381DD517E60AD900427799 /* DemoSlideViewController.xib */,
 				1F381DC017E4435C00427799 /* SideMenuViewController.h */,
 				1F381DC117E4435C00427799 /* SideMenuViewController.m */,
-				1F381DC217E4435C00427799 /* DemoViewController.h */,
-				1F381DC317E4435C00427799 /* DemoViewController.m */,
-				1F381DC617E4454700427799 /* DemoViewController.xib */,
 				1F96830717E4046A00C5EAB9 /* Supporting Files */,
 			);
 			path = KSFrameworkDemo;
@@ -232,12 +231,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				1F96830B17E4046A00C5EAB9 /* InfoPlist.strings in Resources */,
-				1F381DC717E4454700427799 /* DemoViewController.xib in Resources */,
 				1F381DCE17E445E900427799 /* back-arrow.png in Resources */,
 				1F381DCF17E445E900427799 /* back-arrow@2x.png in Resources */,
 				1F381DD017E445E900427799 /* Default-568h@2x.png in Resources */,
 				1F381DD117E445E900427799 /* menu-icon.png in Resources */,
 				1F381DD217E445E900427799 /* menu-icon@2x.png in Resources */,
+				1F381DD717E60ADA00427799 /* DemoSlideViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -248,15 +247,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1F381DC817E4455300427799 /* DemoViewController.xib in Sources */,
 				1F381DC417E4448B00427799 /* SideMenuViewController.m in Sources */,
-				1F381DC517E4448B00427799 /* DemoViewController.m in Sources */,
 				1F96830D17E4046A00C5EAB9 /* main.m in Sources */,
 				1F96831117E4046A00C5EAB9 /* KSAppDelegate.m in Sources */,
 				1F381DA917E4084400427799 /* KSSlideController.m in Sources */,
 				1F381DAD17E40F0000427799 /* KSViewShadow.m in Sources */,
 				1F381DBB17E4168500427799 /* KSImageAdditions.m in Sources */,
 				1F381DBF17E41D7800427799 /* KSInactiveImageView.m in Sources */,
+				1F381DD617E60ADA00427799 /* DemoSlideViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

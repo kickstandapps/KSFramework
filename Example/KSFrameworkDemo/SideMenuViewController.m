@@ -1,12 +1,21 @@
 //
 //  SideMenuViewController.m
-//  MFSideMenuDemo
+//  KSFrameworkDemo
 //
-//  Created by Michael Frederick on 3/19/12.
+//  This file is part of a fork of MFSideMenu by Michael Frederick.
+//
+//  Modified by Travis Zehren beginning 9/07/13.
+//  Copyright (c) 2013 Kickstand Apps. All rights reserved.
+//
+//  This file incorporates work covered by the following copyright and
+//  permission notice:
+//
+//    Created by Michael Frederick on 3/19/12.
+//
 
 #import "SideMenuViewController.h"
 #import "KSSlideController.h"
-#import "DemoViewController.h"
+#import "DemoSlideViewController.h"
 
 @implementation SideMenuViewController
 
@@ -42,13 +51,10 @@
 #pragma mark -
 #pragma mark - UITableViewDelegate
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    DemoViewController *demoController = [[DemoViewController alloc] initWithNibName:@"DemoViewController" bundle:nil];
-    demoController.title = [NSString stringWithFormat:@"Demo #%d-%d", indexPath.section, indexPath.row];
-    
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {    
     UINavigationController *navigationController = self.slideController.centerViewController;
-    NSArray *controllers = [NSArray arrayWithObject:demoController];
-    navigationController.viewControllers = controllers;
+    ((UIViewController *)navigationController.viewControllers.lastObject).title = [NSString stringWithFormat:@"Demo #%d-%d", indexPath.section, indexPath.row];
+
     [self.slideController setMenuState:KSSlideControllerStateClosed];
 }
 
