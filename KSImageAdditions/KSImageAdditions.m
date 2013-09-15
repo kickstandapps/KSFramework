@@ -32,7 +32,7 @@
     {
         blur = 0.5f;
     }
-    int boxSize = (int)(blur * 40);
+    int boxSize = (int)(blur * 20);
     boxSize = boxSize - (boxSize % 2) + 1;
     
     //Get CGImage from UIImage

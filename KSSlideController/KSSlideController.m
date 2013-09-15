@@ -184,6 +184,7 @@ typedef enum {
 
         _leftContainer.autoresizingMask = UIViewAutoresizingFlexibleHeight;
         _leftContainer.backgroundColor = [UIColor clearColor];
+        _leftContainer.hidden = YES;
 
         if (!self.leftViewController.view.superview)
         {
@@ -210,6 +211,7 @@ typedef enum {
         
         _rightContainer.autoresizingMask = UIViewAutoresizingFlexibleHeight;
         _rightContainer.backgroundColor = [UIColor clearColor];
+        _rightContainer.hidden = YES;
         
         if (!self.rightViewController.view.superview)
         {

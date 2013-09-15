@@ -30,9 +30,6 @@
     SideMenuViewController *rightMenuViewController = [[SideMenuViewController alloc] init];
     KSSlideController *container = [KSSlideController slideControllerWithCenterViewController:[self navigationController] leftViewController:leftMenuViewController rightViewController:rightMenuViewController];
     
-    container.showMenuOverContent = NO;
-    container.menuSlideScaleFactor = 0.9;
-    //container.menuSlideParallaxFactor = 1.0;
     self.window.rootViewController = container;
     [self.window makeKeyAndVisible];
     
