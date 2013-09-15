@@ -599,32 +599,27 @@ typedef enum {
     
     
     // handle inactive views
-    if (offset != 0 && self.centerOverlay.hidden == YES)
+    if (offset != 0 && self.centerOverlay.hidden == YES && (self.contentBlurFactor || (self.showMenuOverContent && self.menuSlideScaleFactor)))
     {
         self.centerOverlay.image = [self.centerViewController view].screenshot;
         self.centerOverlay.hidden = NO;
         [self.centerViewController view].hidden = YES;
-        
-        self.leftOverlay.image = self.leftViewController.view.screenshot;
-        self.leftOverlay.hidden = NO;
-        self.leftViewController.view.hidden = YES;
-        
-        self.rightOverlay.image = self.rightViewController.view.screenshot;
-        self.rightOverlay.hidden = NO;
-        self.rightViewController.view.hidden = YES;
     }
-    else if (offset != self.leftMenuWidth && self.leftOverlay.hidden == YES)
+    
+    if (offset > 0 && offset < self.leftMenuWidth && self.leftOverlay.hidden == YES && (self.menuBlurFactor || (!self.showMenuOverContent && self.menuSlideScaleFactor)))
     {
         self.leftOverlay.image = self.leftViewController.view.screenshot;
         self.leftOverlay.hidden = NO;
         self.leftViewController.view.hidden = YES;
     }
-    else if (offset != self.rightMenuWidth && self.rightOverlay.hidden == YES)
+
+    if (offset < 0 && offset > -self.rightMenuWidth && self.rightOverlay.hidden == YES && (self.menuBlurFactor || (!self.showMenuOverContent && self.menuSlideScaleFactor)))
     {
         self.rightOverlay.image = self.rightViewController.view.screenshot;
         self.rightOverlay.hidden = NO;
         self.rightViewController.view.hidden = YES;
     }
+
     
     CGFloat slideRatio = offset == 0 ? 0 : MAX(offset/self.leftMenuWidth, -offset/self.rightMenuWidth);
     

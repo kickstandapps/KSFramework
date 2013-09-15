@@ -27,7 +27,6 @@
     {
         return self;
     }
-    
     if (blur < 0.f || blur > 1.f)
     {
         blur = 0.5f;
@@ -121,13 +120,13 @@
 
 - (UIImage *)screenshot
 {
-    UIGraphicsBeginImageContext(self.bounds.size);
+    UIGraphicsBeginImageContextWithOptions(self.bounds.size,self.opaque,[[UIScreen mainScreen] scale]);
     [self.layer renderInContext:UIGraphicsGetCurrentContext()];
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
     
     // hack, helps w/ our colors when blurring
-    NSData *imageData = UIImageJPEGRepresentation(image, 1); // convert to jpeg
+    NSData *imageData = UIImageJPEGRepresentation(image, 0.1); // convert to jpeg
     image = [UIImage imageWithData:imageData];
     
     return image;
@@ -147,7 +146,7 @@
     [self setContentOffset:offset animated:NO];
 
     CGSize pageSize = self.bounds.size;
-    UIGraphicsBeginImageContext(pageSize);
+    UIGraphicsBeginImageContextWithOptions(pageSize,self.opaque,[[UIScreen mainScreen] scale]);
 
     CGContextRef resizedContext = UIGraphicsGetCurrentContext();
     CGContextTranslateCTM(resizedContext, -self.contentOffset.x, -self.contentOffset.y);
@@ -155,11 +154,11 @@
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
 
     UIGraphicsEndImageContext();
-    
+
     // hack, helps w/ our colors when blurring
-    NSData *imageData = UIImageJPEGRepresentation(image, 1); // convert to jpeg
+    NSData *imageData = UIImageJPEGRepresentation(image, 0.1); // convert to jpeg
     image = [UIImage imageWithData:imageData];
-    
+
     return image;
 }
 
