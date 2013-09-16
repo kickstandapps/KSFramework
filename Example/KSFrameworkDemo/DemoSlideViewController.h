@@ -13,6 +13,7 @@
 - (IBAction)switchMenuDepth:(id)sender;
 - (IBAction)slideParallaxFactor:(id)sender;
 - (IBAction)slideScaleFactor:(id)sender;
+- (IBAction)slideTintOpacity:(id)sender;
 - (IBAction)slideMenuBlurFactor:(id)sender;
 - (IBAction)slideContentBlurFactor:(id)sender;
 

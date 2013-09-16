@@ -103,6 +103,8 @@ typedef enum {
 @synthesize showMenuOverContent = _showMenuOverContent;
 @synthesize menuSlideParallaxFactor = _menuSlideParallaxFactor;
 @synthesize menuSlideScaleFactor = _menuSlideScaleFactor;
+@synthesize menuSlideTintColor = _menuSlideTintColor;
+@synthesize menuSlideTintOpacity = _menuSlideTintOpacity;
 @synthesize menuBlurFactor = _menuBlurFactor;
 @synthesize contentBlurFactor = _contentBlurFactor;
 @synthesize contentShadow;
@@ -257,6 +259,10 @@ typedef enum {
         [self.contentShadow refresh];
         [self.leftMenuShadow refresh];
         [self.rightMenuShadow refresh];
+        
+        self.leftOverlay.image = self.leftViewController.view.screenshot;
+        self.rightOverlay.image = self.rightViewController.view.screenshot;
+        self.centerOverlay.image = [self.centerViewController view].screenshot;
         
         self.viewHasAppeared = YES;
     }
@@ -599,7 +605,7 @@ typedef enum {
     
     
     // handle inactive views
-    if (offset != 0 && self.centerOverlay.hidden == YES && (self.contentBlurFactor || (self.showMenuOverContent && self.menuSlideScaleFactor)))
+    if (offset != 0 && self.centerOverlay.hidden == YES && (self.menuSlideTintOpacity || self.contentBlurFactor || (self.showMenuOverContent && self.menuSlideScaleFactor)))
     {
         self.centerOverlay.image = [self.centerViewController view].screenshot;
         self.centerOverlay.hidden = NO;
@@ -656,6 +662,7 @@ typedef enum {
         self.rightOverlay.scale = 1 - (1 - slideRatio) * (1 - self.menuSlideScaleFactor);
     }
     
+    self.centerOverlay.tintOpacity = slideRatio * self.menuSlideTintOpacity;
     self.centerOverlay.blurIntensity = 1 - pow(slideRatio - 1,2);
     self.leftOverlay.blurIntensity = 1 - (pow(slideRatio,2));
     self.rightOverlay.blurIntensity = 1 - (pow(slideRatio,2));
@@ -789,6 +796,18 @@ typedef enum {
 - (void)setMenuSlideScaleFactor:(CGFloat)menuSlideScaleFactor
 {
     _menuSlideScaleFactor = MAX(0, MIN(1, menuSlideScaleFactor));
+}
+
+- (void)setMenuSlideTintColor:(UIColor *)menuSlideTintColor
+{
+    _menuSlideTintColor = menuSlideTintColor;
+    
+    self.centerOverlay.tintColor = menuSlideTintColor;
+}
+
+- (void)setMenuSlideTintOpacity:(CGFloat)menuSlideTintOpacity
+{
+    _menuSlideTintOpacity = MAX(0, MIN(1, menuSlideTintOpacity));
 }
 
 - (void)setMenuBlurFactor:(CGFloat)menuBlurFactor

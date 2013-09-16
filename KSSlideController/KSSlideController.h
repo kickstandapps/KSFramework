@@ -99,6 +99,10 @@ typedef enum {
 // 1 = no scaling (default)
 // < 1 = scale of menu or content when not focused upon
 
+// menu slide in tint and opacity (over inactive center view)
+@property (nonatomic, strong) UIColor *menuSlideTintColor;
+@property (nonatomic, assign) CGFloat menuSlideTintOpacity;
+
 // menu slide in blurring (blur -> sharp as menu opens)
 @property (nonatomic, assign) CGFloat menuBlurFactor;
 // 0 = no blurring (default)

@@ -116,7 +116,12 @@
     
     if (self.blurSize)
     {
-        self.blurredImageView.image = [image imageWithBlur:self.blurSize];
+        dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+            UIImage *blurredImage = [image imageWithBlur:self.blurSize];
+            dispatch_async(dispatch_get_main_queue(), ^(void){
+                self.blurredImageView.image = blurredImage;
+            });
+        });
     }
 }
 
@@ -175,7 +180,12 @@
 {
     _blurSize = blurSize;
     
-    self.blurredImageView.image = [self.image imageWithBlur:blurSize];
+    dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
+        UIImage *blurredImage = [self.image imageWithBlur:self.blurSize];
+        dispatch_async(dispatch_get_main_queue(), ^(void){
+            self.blurredImageView.image = blurredImage;
+        });
+    });
 }
 
 - (void)setBlurIntensity:(CGFloat)blurIntensity

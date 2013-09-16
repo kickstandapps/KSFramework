@@ -39,6 +39,12 @@
     self.navigationController.slideController.menuSlideScaleFactor = ((UISlider *)sender).value;
 }
 
+- (IBAction)slideTintOpacity:(id)sender
+{
+    self.navigationController.slideController.menuSlideTintColor = [UIColor whiteColor];
+    self.navigationController.slideController.menuSlideTintOpacity = ((UISlider *)sender).value;
+}
+
 - (IBAction)slideMenuBlurFactor:(id)sender
 {
     self.navigationController.slideController.menuBlurFactor = ((UISlider *)sender).value;

@@ -41,6 +41,7 @@
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        cell.textLabel.font = [UIFont fontWithName:@"AvenirNext" size:21];
     }
     
     cell.textLabel.text = [NSString stringWithFormat:@"Item %d", indexPath.row];

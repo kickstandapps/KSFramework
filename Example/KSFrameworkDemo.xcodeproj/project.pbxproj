@@ -333,10 +333,11 @@
 		1F96831B17E4046A00C5EAB9 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer: Travis Zehren (Y9P9L9R7TP)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "KSFrameworkDemo/KSFrameworkDemo-Prefix.pch";
 				INFOPLIST_FILE = "KSFrameworkDemo/KSFrameworkDemo-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -345,10 +346,11 @@
 		1F96831C17E4046A00C5EAB9 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "iPhone Developer: Travis Zehren (Y9P9L9R7TP)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "KSFrameworkDemo/KSFrameworkDemo-Prefix.pch";
 				INFOPLIST_FILE = "KSFrameworkDemo/KSFrameworkDemo-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
