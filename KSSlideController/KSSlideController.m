@@ -10,8 +10,8 @@
 //  This file incorporates work covered by the following copyright and
 //  permission notice:
 //
-//    MFSidesideViewContainerViewController.m
-//    MFSidesideViewDemoSplitViewController
+//    MFSideMenuContainerViewController.m
+//    MFSideMenuDemoSplitViewController
 //
 //    Created by Michael Frederick on 4/2/13.
 //    Copyright (c) 2013 Frederick Development. All rights reserved.
@@ -60,17 +60,16 @@ typedef enum {
 - (KSSlideController *)slideController
 {
     id containerView = self;
-    while (![containerView isKindOfClass:[KSSlideController class]] && containerView)
-    {
-        if ([containerView respondsToSelector:@selector(parentViewController)])
-        {
+    while (![containerView isKindOfClass:[KSSlideController class]] && containerView) {
+        if ([containerView respondsToSelector:@selector(parentViewController)]) {
             containerView = [containerView parentViewController];
         }
-        if ([containerView respondsToSelector:@selector(splitViewController)] && !containerView)
-        {
+        
+        if ([containerView respondsToSelector:@selector(splitViewController)] && !containerView) {
             containerView = [containerView splitViewController];
         }
     }
+    
     return containerView;
 }
 
@@ -116,8 +115,7 @@ typedef enum {
 
 + (KSSlideController *)slideControllerWithCenterViewController:(id)centerViewController
                                             leftViewController:(id)leftViewController
-                                           rightViewController:(id)rightViewController
-{
+                                           rightViewController:(id)rightViewController {
     KSSlideController *controller = [[KSSlideController alloc] init];
     controller.leftViewController = leftViewController;
     controller.centerViewController = centerViewController;
@@ -127,22 +125,20 @@ typedef enum {
 
 - (id) init {
     self = [super init];
-    if(self)
-    {
+    if(self) {
         [self setDefaultSettings];
     }
+    
     return self;
 }
 
-- (id)initWithCoder:(NSCoder *)inCoder
-{
+- (id)initWithCoder:(NSCoder *)inCoder {
     id coder = [super initWithCoder:inCoder];
     [self setDefaultSettings];
     return coder;
 }
 
-- (void)setDefaultSettings
-{
+- (void)setDefaultSettings {
     self.sideViewSlideScaleFactor = 1.0;
     self.sideViewSlideParallaxFactor = 0.0;
     self.slideControllerState = KSSlideControllerStateClosed;
@@ -151,17 +147,14 @@ typedef enum {
     self.panMode = KSSlideControllerPanModeDefault;
 }
 
-- (UIView *)centerContainer
-{
-    if (!_centerContainer)
-    {
+- (UIView *)centerContainer {
+    if (!_centerContainer) {
         _centerContainer = [[UIView alloc] initWithFrame:self.view.bounds];
         
         _centerContainer.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
         _centerContainer.backgroundColor = [UIColor clearColor];
         
-        if (![self.centerViewController view].superview)
-        {
+        if (![self.centerViewController view].superview) {
             [self.centerViewController view].frame = _centerContainer.bounds;
             [_centerContainer addSubview:[self.centerViewController view]];
         }
@@ -174,21 +167,19 @@ typedef enum {
         self.centerViewShadow = [KSViewShadow shadowWithView:_centerContainer];
         [self.centerViewShadow refresh];
     }
+    
     return _centerContainer;
 }
 
-- (UIView *)leftContainer
-{
-    if (!_leftContainer)
-    {
+- (UIView *)leftContainer {
+    if (!_leftContainer) {
         _leftContainer = [[UIView alloc] initWithFrame:CGRectMake(-self.leftViewWidth, 0, self.leftViewWidth, self.view.bounds.size.height)];
 
         _leftContainer.autoresizingMask = UIViewAutoresizingFlexibleHeight;
         _leftContainer.backgroundColor = [UIColor clearColor];
         _leftContainer.hidden = YES;
 
-        if (!self.leftViewController.view.superview)
-        {
+        if (!self.leftViewController.view.superview) {
             self.leftViewController.view.frame = _leftContainer.bounds;
             [_leftContainer addSubview:self.leftViewController.view];
         }
@@ -201,21 +192,19 @@ typedef enum {
         self.leftViewShadow = [KSViewShadow shadowWithView:_leftContainer];
         [self.leftViewShadow refresh];
     }
+    
     return _leftContainer;
 }
 
-- (UIView *)rightContainer
-{
-    if (!_rightContainer)
-    {
+- (UIView *)rightContainer {
+    if (!_rightContainer) {
         _rightContainer = [[UIView alloc] initWithFrame:CGRectMake(self.view.bounds.size.width, 0, self.rightViewWidth, self.view.bounds.size.height)];
         
         _rightContainer.autoresizingMask = UIViewAutoresizingFlexibleHeight;
         _rightContainer.backgroundColor = [UIColor clearColor];
         _rightContainer.hidden = YES;
         
-        if (!self.rightViewController.view.superview)
-        {
+        if (!self.rightViewController.view.superview) {
             self.rightViewController.view.frame = _rightContainer.bounds;
             [_rightContainer addSubview:self.rightViewController.view];
         }
@@ -228,6 +217,7 @@ typedef enum {
         self.rightViewShadow = [KSViewShadow shadowWithView:_rightContainer];
         [self.rightViewShadow refresh];
     }
+    
     return _rightContainer;
 }
 
@@ -238,8 +228,7 @@ typedef enum {
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    if (!self.viewHasLoaded)
-    {
+    if (!self.viewHasLoaded) {
         [self.view addSubview:self.leftContainer];
         [self.view addSubview:self.rightContainer];
         [self.view addSubview:self.centerContainer];
@@ -276,8 +265,10 @@ typedef enum {
         if ([self.centerViewController isKindOfClass:[UINavigationController class]]) {
             return [((UINavigationController *)self.centerViewController).topViewController supportedInterfaceOrientations];
         }
+        
         return [self.centerViewController supportedInterfaceOrientations];
     }
+    
     return [super supportedInterfaceOrientations];
 }
 
@@ -286,8 +277,10 @@ typedef enum {
         if ([self.centerViewController isKindOfClass:[UINavigationController class]]) {
             return [((UINavigationController *)self.centerViewController).topViewController shouldAutorotate];
         }
+        
         return [self.centerViewController shouldAutorotate];
     }
+    
     return YES;
 }
 
@@ -296,8 +289,10 @@ typedef enum {
         if ([self.centerViewController isKindOfClass:[UINavigationController class]]) {
             return [((UINavigationController *)self.centerViewController).topViewController preferredInterfaceOrientationForPresentation];
         }
+        
         return [self.centerViewController preferredInterfaceOrientationForPresentation];
     }
+    
     return UIInterfaceOrientationPortrait;
 }
 
@@ -325,31 +320,39 @@ typedef enum {
     [self removeChildViewControllerFromContainer:_leftViewController];
     
     _leftViewController = leftViewController;
-    if(!_leftViewController) return;
+    
+    if(_leftViewController) {
+        return;
+    }
     
     [self addChildViewController:_leftViewController];
-    if (self.viewHasLoaded)
-    {
+    if (self.viewHasLoaded) {
         _leftViewController.view.frame = self.leftContainer.bounds;
         [self.leftContainer addSubview:_leftViewController.view];
     }
+    
     [_leftViewController didMoveToParentViewController:self];
     
-    if(self.viewHasAppeared) [self setLeftViewFrameToClosedPosition];
+    if(self.viewHasAppeared) {
+        [self setLeftViewFrameToClosedPosition];
+    }
 }
 
 - (void)setCenterViewController:(UIViewController *)centerViewController {
     [self removeChildViewControllerFromContainer:_centerViewController];
     
     _centerViewController = centerViewController;
-    if(!_centerViewController) return;
+    
+    if(!_centerViewController) {
+        return;
+    }
     
     [self addChildViewController:_centerViewController];
-    if (self.viewHasLoaded)
-    {
+    if (self.viewHasLoaded) {
         [((UIViewController *)_centerViewController) view].frame = self.centerContainer.bounds;
         [self.centerContainer addSubview:[_centerViewController view]];
-    }    
+    }
+    
     [_centerViewController didMoveToParentViewController:self];
 }
 
@@ -357,17 +360,22 @@ typedef enum {
     [self removeChildViewControllerFromContainer:_rightViewController];
     
     _rightViewController = rightViewController;
-    if(!_rightViewController) return;
+    
+    if(!_rightViewController) {
+        return;
+    }
     
     [self addChildViewController:_rightViewController];
-    if (self.viewHasLoaded)
-    {
+    if (self.viewHasLoaded) {
         _rightViewController.view.frame = self.rightContainer.bounds;
         [self.rightContainer addSubview:_rightViewController.view];
     }
+    
     [_rightViewController didMoveToParentViewController:self];
     
-    if(self.viewHasAppeared) [self setRightViewFrameToClosedPosition];
+    if(self.viewHasAppeared) {
+        [self setRightViewFrameToClosedPosition];
+    }
 }
 
 - (void)removeChildViewControllerFromContainer:(UIViewController *)childViewController {
@@ -396,8 +404,7 @@ typedef enum {
     [self.rightContainer addGestureRecognizer:[self panGestureRecognizer]];
 }
 
-- (UITapGestureRecognizer *)centerTapGestureRecognizer
-{
+- (UITapGestureRecognizer *)centerTapGestureRecognizer {
     UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc]
                                              initWithTarget:self
                                              action:@selector(centerViewControllerTapped:)];
@@ -412,7 +419,8 @@ typedef enum {
 - (void)toggleLeftViewWithCompletion:(void (^)(void))completion {
     if(self.slideControllerState == KSSlideControllerStateLeftViewOpen) {
         [self setSlideControllerState:KSSlideControllerStateClosed completion:completion];
-    } else {
+    }
+    else {
         [self setSlideControllerState:KSSlideControllerStateLeftViewOpen completion:completion];
     }
 }
@@ -420,21 +428,22 @@ typedef enum {
 - (void)toggleRightViewWithCompletion:(void (^)(void))completion {
     if(self.slideControllerState == KSSlideControllerStateRightViewOpen) {
         [self setSlideControllerState:KSSlideControllerStateClosed completion:completion];
-    } else {
+    }
+    else {
         [self setSlideControllerState:KSSlideControllerStateRightViewOpen completion:completion];
     }
 }
 
 - (void)openLeftViewWithCompletion:(void (^)(void))completion {
-    if(!self.leftViewController) return;
-    
-    [self setControllerOffset:self.leftViewWidth animated:YES completion:completion];
+    if(self.leftViewController) {
+        [self setControllerOffset:self.leftViewWidth animated:YES completion:completion];
+    }
 }
 
 - (void)openRightViewWithCompletion:(void (^)(void))completion {
-    if(!self.rightViewController) return;
-    
-    [self setControllerOffset:-self.rightViewWidth animated:YES completion:completion];
+    if(self.rightViewController) {
+        [self setControllerOffset:-self.rightViewWidth animated:YES completion:completion];
+    }
 }
 
 - (void)closeSideViewWithCompletion:(void (^)(void))completion {
@@ -446,20 +455,21 @@ typedef enum {
 }
 
 - (void)setSlideControllerState:(KSSlideControllerState)state completion:(void (^)(void))completion {
-    if (!self.viewHasLoaded)
-    {
+    if (!self.viewHasLoaded) {
         _slideControllerState = state;
         return;
     }
     
-    void (^innerCompletion)() = ^ {
+    void (^innerCompletion)() = ^{
         _slideControllerState = state;
         
         [self setUserInteractionStateForCenterViewController];
         KSSlideControllerStateEvent eventType = (_slideControllerState == KSSlideControllerStateClosed) ? KSSlideControllerStateEventSideViewDidClose : KSSlideControllerStateEventSideViewDidOpen;
         [self sendStateEventNotification:eventType];
         
-        if(completion) completion();
+        if(completion) {
+            completion();
+        }
     };
     
     switch (state) {
@@ -485,31 +495,33 @@ typedef enum {
             break;
         }
         case KSSlideControllerStateLeftViewOpen: {
-            if(!self.leftViewController) return;
-            [self sendStateEventNotification:KSSlideControllerStateEventSideViewWillOpen];
-            [self leftViewWillShow];
-            [self openLeftViewWithCompletion:^{
-                self.leftOverlay.image = nil;
-                self.leftOverlay.hidden = YES;
-                self.leftViewController.view.hidden = NO;
-                self.leftViewShadow.shadowedView = self.leftContainer;
-                [self.leftViewShadow refresh];
-                innerCompletion();
-            }];
+            if(self.leftViewController) {
+                [self sendStateEventNotification:KSSlideControllerStateEventSideViewWillOpen];
+                [self leftViewWillShow];
+                [self openLeftViewWithCompletion:^{
+                    self.leftOverlay.image = nil;
+                    self.leftOverlay.hidden = YES;
+                    self.leftViewController.view.hidden = NO;
+                    self.leftViewShadow.shadowedView = self.leftContainer;
+                    [self.leftViewShadow refresh];
+                    innerCompletion();
+                }];
+            }
             break;
         }
         case KSSlideControllerStateRightViewOpen: {
-            if(!self.rightViewController) return;
-            [self sendStateEventNotification:KSSlideControllerStateEventSideViewWillOpen];
-            [self rightViewWillShow];
-            [self openRightViewWithCompletion:^{
-                self.rightOverlay.image = nil;
-                self.rightOverlay.hidden = YES;
-                self.rightViewController.view.hidden = NO;
-                self.rightViewShadow.shadowedView = self.rightContainer;
-                [self.rightViewShadow refresh];
-                innerCompletion();
-            }];
+            if(self.rightViewController) {
+                [self sendStateEventNotification:KSSlideControllerStateEventSideViewWillOpen];
+                [self rightViewWillShow];
+                [self openRightViewWithCompletion:^{
+                    self.rightOverlay.image = nil;
+                    self.rightOverlay.hidden = YES;
+                    self.rightViewController.view.hidden = NO;
+                    self.rightViewShadow.shadowedView = self.rightContainer;
+                    [self.rightViewShadow refresh];
+                    innerCompletion();
+                }];
+            }
             break;
         }
         default:
@@ -531,11 +543,8 @@ typedef enum {
 #pragma mark - State Event Notification
 
 - (void)sendStateEventNotification:(KSSlideControllerStateEvent)event {
-    NSDictionary *userInfo = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:event]
-                                                         forKey:@"eventType"];
-    [[NSNotificationCenter defaultCenter] postNotificationName:KSSlideControllerStateNotificationEvent
-                                                        object:self
-                                                      userInfo:userInfo];
+    NSDictionary *userInfo = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:event] forKey:@"eventType"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:KSSlideControllerStateNotificationEvent object:self userInfo:userInfo];
 }
 
 
@@ -546,8 +555,7 @@ typedef enum {
 // An offset of 0 is closed
 
 - (void)setControllerOffset:(CGFloat)offset animated:(BOOL)animated completion:(void (^)(void))completion {
-    [self setControllerOffset:offset additionalAnimations:nil
-                     animated:animated completion:completion];
+    [self setControllerOffset:offset additionalAnimations:nil animated:animated completion:completion];
 }
 
 - (void)setControllerOffset:(CGFloat)offset
@@ -556,11 +564,14 @@ typedef enum {
                  completion:(void (^)(void))completion {
     void (^innerCompletion)() = ^ {
         self.panGestureVelocity = 0.0;
-        if(completion) completion();
+        if(completion) {
+            completion();
+        }
     };
     
     if(animated) {
-        CGFloat centerViewControllerXPosition = (self.centerViewController) ? self.centerContainer.frame.origin.x/(self.sideViewsOnTop ? self.slideParallaxFactor : 1) : 0;
+        CGFloat centerViewControllerXPosition = CGRectGetMinX(self.centerContainer.frame)/(self.sideViewsOnTop ? self.slideParallaxFactor : 1);
+        
         CGFloat duration = [self animationDurationFromStartPosition:centerViewControllerXPosition toEndPosition:offset];
                 
         [UIView animateWithDuration:duration animations:^{
@@ -569,20 +580,25 @@ typedef enum {
             
             [self setControllerOffset:offset];
             
-            // Otherwise shadow is removed while side view closes
-            if (self.leftViewShadow.alpha != leftAlpha && leftAlpha > 0)
+            if (self.leftViewShadow.alpha != leftAlpha && leftAlpha > 0) {
                 self.leftViewShadow.alpha = leftAlpha;
-            if (self.rightViewShadow.alpha != rightAlpha && rightAlpha > 0)
+            }
+            
+            if (self.rightViewShadow.alpha != rightAlpha && rightAlpha > 0) {
                 self.rightViewShadow.alpha = rightAlpha;
+            }
             
             if(additionalAnimations) additionalAnimations();
         } completion:^(BOOL finished) {
             [self setControllerOffset:offset];
             innerCompletion();
         }];
-    } else {
+    }
+    else {
         [self setControllerOffset:offset];
-        if(additionalAnimations) additionalAnimations();
+        if(additionalAnimations) {
+            additionalAnimations();
+        }
         innerCompletion();
     }
 }
@@ -604,22 +620,19 @@ typedef enum {
     
     
     // handle inactive views
-    if (offset != 0 && self.centerOverlay.hidden == YES && (self.centerViewBlurFactor || (self.sideViewsOnTop && self.slideScaleFactor)))
-    {
+    if (offset != 0 && self.centerOverlay.hidden == YES && (self.centerViewBlurFactor || (self.sideViewsOnTop && self.slideScaleFactor))) {
         self.centerOverlay.image = [self.centerViewController view].screenshot;
         self.centerOverlay.hidden = NO;
         [self.centerViewController view].hidden = YES;
     }
     
-    if (offset > 0 && offset < self.leftViewWidth && self.leftOverlay.hidden == YES && (self.sideViewBlurFactor || (!self.sideViewsOnTop && self.slideScaleFactor)))
-    {
+    if (offset > 0 && offset < self.leftViewWidth && self.leftOverlay.hidden == YES && (self.sideViewBlurFactor || (!self.sideViewsOnTop && self.slideScaleFactor))) {
         self.leftOverlay.image = self.leftViewController.view.screenshot;
         self.leftOverlay.hidden = NO;
         self.leftViewController.view.hidden = YES;
     }
 
-    if (offset < 0 && offset > -self.rightViewWidth && self.rightOverlay.hidden == YES && (self.sideViewBlurFactor || (!self.sideViewsOnTop && self.slideScaleFactor)))
-    {
+    if (offset < 0 && offset > -self.rightViewWidth && self.rightOverlay.hidden == YES && (self.sideViewBlurFactor || (!self.sideViewsOnTop && self.slideScaleFactor))) {
         self.rightOverlay.image = self.rightViewController.view.screenshot;
         self.rightOverlay.hidden = NO;
         self.rightViewController.view.hidden = YES;
@@ -628,34 +641,28 @@ typedef enum {
     
     CGFloat slideRatio = offset == 0 ? 0 : MAX(offset/self.leftViewWidth, -offset/self.rightViewWidth);
     
-    if ((offset < 0 && self.slideParallaxFactor > 0.5) || (offset > 0 && self.slideParallaxFactor < 0.5))
-    {
+    if ((offset < 0 && self.slideParallaxFactor > 0.5) || (offset > 0 && self.slideParallaxFactor < 0.5)) {
         self.centerOverlay.edgeHold = KSScaleEdgeHoldRight;
     }
-    else
-    {
+    else {
         self.centerOverlay.edgeHold = KSScaleEdgeHoldLeft;
     }
     
-    if (self.slideParallaxFactor < 0.5)
-    {
+    if (self.slideParallaxFactor < 0.5) {
         self.leftOverlay.edgeHold = KSScaleEdgeHoldLeft;
         self.rightOverlay.edgeHold = KSScaleEdgeHoldRight;
     }
-    else
-    {
+    else {
         self.leftOverlay.edgeHold = KSScaleEdgeHoldRight;
         self.rightOverlay.edgeHold = KSScaleEdgeHoldLeft;
     }
     
-    if (self.sideViewsOnTop)
-    {
+    if (self.sideViewsOnTop) {
         self.centerOverlay.scale = 1 - (slideRatio * (1 - self.slideScaleFactor));
         self.leftOverlay.scale = 1;
         self.rightOverlay.scale = 1;
     }
-    else
-    {
+    else {
         self.centerOverlay.scale = 1;
         self.leftOverlay.scale = 1 - (1 - slideRatio) * (1 - self.slideScaleFactor);
         self.rightOverlay.scale = 1 - (1 - slideRatio) * (1 - self.slideScaleFactor);
@@ -674,9 +681,9 @@ typedef enum {
     if(ABS(self.panGestureVelocity) > 1.0) {
         // try to continue the animation at the speed the user was swiping
         duration = animationPositionDelta / ABS(self.panGestureVelocity);
-    } else {
+    }
+    else {
         // no swipe was used, user tapped the bar button item
-        // TODO: full animation duration hard to calculate with two side view widths
         CGFloat sideViewWidth = MAX(_leftViewWidth, _rightViewWidth);
         CGFloat animationPerecent = (animationPositionDelta == 0) ? 0 : sideViewWidth / animationPositionDelta;
         duration = self.slideAnimationDuration * animationPerecent;
@@ -731,8 +738,7 @@ typedef enum {
 - (void)setLeftViewWidth:(CGFloat)leftViewWidth animated:(BOOL)animated {
     _leftViewWidth = leftViewWidth;
     
-    if (!self.viewHasLoaded)
-    {
+    if (!self.viewHasLoaded) {
         return;
     }
     
@@ -751,8 +757,7 @@ typedef enum {
 - (void)setRightViewWidth:(CGFloat)rightViewWidth animated:(BOOL)animated {
     _rightViewWidth = rightViewWidth;
     
-    if (!self.viewHasLoaded)
-    {
+    if (!self.viewHasLoaded) {
         return;
     }
     
@@ -777,48 +782,39 @@ typedef enum {
 {
     _sideViewsOnTop = sideViewsOnTop;
     
-    if (_sideViewsOnTop)
-    {
+    if (_sideViewsOnTop) {
         [self.view sendSubviewToBack:self.centerContainer];
     }
-    else
-    {
+    else {
         [self.view bringSubviewToFront:self.centerContainer];
     }
 }
 
-- (void)setSideViewSlideParallaxFactor:(CGFloat)sideViewSlideParallaxFactor
-{
+- (void)setSideViewSlideParallaxFactor:(CGFloat)sideViewSlideParallaxFactor {
     _slideParallaxFactor = MAX(0, MIN(1, sideViewSlideParallaxFactor));
 }
 
-- (void)setSideViewSlideScaleFactor:(CGFloat)sideViewSlideScaleFactor
-{
+- (void)setSideViewSlideScaleFactor:(CGFloat)sideViewSlideScaleFactor {
     _slideScaleFactor = MAX(0, MIN(1, sideViewSlideScaleFactor));
 }
 
-- (void)setSideViewSlideTintColor:(UIColor *)sideViewSlideTintColor
-{
+- (void)setSideViewSlideTintColor:(UIColor *)sideViewSlideTintColor {
     _slideTintColor = sideViewSlideTintColor;
-    
     self.centerOverlay.tintColor = sideViewSlideTintColor;
 }
 
-- (void)setSideViewSlideTintOpacity:(CGFloat)sideViewSlideTintOpacity
-{
+- (void)setSideViewSlideTintOpacity:(CGFloat)sideViewSlideTintOpacity {
     _slideTintOpacity = MAX(0, MIN(1, sideViewSlideTintOpacity));
 }
 
-- (void)setSideViewBlurFactor:(CGFloat)sideViewBlurFactor
-{
+- (void)setSideViewBlurFactor:(CGFloat)sideViewBlurFactor {
     _sideViewBlurFactor = MAX(0, MIN(1, sideViewBlurFactor));
     
     self.leftOverlay.blurSize = _sideViewBlurFactor;
     self.rightOverlay.blurSize = _sideViewBlurFactor;
 }
 
-- (void)setCenterViewBlurFactor:(CGFloat)centerViewBlurFactor
-{
+- (void)setCenterViewBlurFactor:(CGFloat)centerViewBlurFactor {
     _centerViewBlurFactor = MAX(0, MIN(1, centerViewBlurFactor));
     
     self.centerOverlay.blurSize = _centerViewBlurFactor;
@@ -842,14 +838,18 @@ typedef enum {
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch {
     if([gestureRecognizer isKindOfClass:[UITapGestureRecognizer class]] &&
-       self.slideControllerState != KSSlideControllerStateClosed) return YES;
+       self.slideControllerState != KSSlideControllerStateClosed) {
+        return YES;
+    }
     
     if([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
-        if([gestureRecognizer.view isEqual:self.centerContainer])
+        if([gestureRecognizer.view isEqual:self.centerContainer]) {
             return [self centerViewControllerPanEnabled];
+        }
         
-        if([gestureRecognizer.view isEqual:self.leftContainer] || [gestureRecognizer.view isEqual:self.rightContainer])
+        if([gestureRecognizer.view isEqual:self.leftContainer] || [gestureRecognizer.view isEqual:self.rightContainer]) {
             return [self sidesideViewPanEnabled];
+        }
         
         // pan gesture is attached to a custom view
         return YES;
@@ -906,7 +906,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     
     if(self.panDirection == KSSlideControllerPanDirectionLeft) {
         [self handleLeftPan:recognizer];
-    } else if(self.panDirection == KSSlideControllerPanDirectionRight) {
+    }
+    else if(self.panDirection == KSSlideControllerPanDirectionRight) {
         [self handleRightPan:recognizer];
     }
     
@@ -916,16 +917,20 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 }
 
 - (void) handleRightPan:(UIPanGestureRecognizer *)recognizer {
-    if(!self.leftViewController && self.slideControllerState == KSSlideControllerStateClosed) return;
+    if(!self.leftViewController && self.slideControllerState == KSSlideControllerStateClosed) {
+        return;
+    }
     
     UIView *view = [self.centerViewController view];
     
     CGPoint translatedPoint = [recognizer translationInView:view];
     CGPoint adjustedOrigin = CGPointZero;
-    if (self.slideControllerState == KSSlideControllerStateRightViewOpen)
+    if (self.slideControllerState == KSSlideControllerStateRightViewOpen) {
         adjustedOrigin.x = -self.rightViewWidth;
-    else if (self.slideControllerState == KSSlideControllerStateLeftViewOpen)
+    }
+    else if (self.slideControllerState == KSSlideControllerStateLeftViewOpen) {
         adjustedOrigin.x = self.leftViewWidth;
+    }
     translatedPoint = CGPointMake(adjustedOrigin.x + translatedPoint.x,
                                   adjustedOrigin.y + translatedPoint.y);
     
@@ -950,39 +955,48 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             if(showsideView) {
                 self.panGestureVelocity = velocity.x;
                 [self setSlideControllerState:KSSlideControllerStateLeftViewOpen];
-            } else {
+            }
+            else {
                 self.panGestureVelocity = 0;
                 [self setSlideControllerState:KSSlideControllerStateClosed];
             }
-        } else {
+        }
+        else {
             BOOL hidesideView = (finalX > adjustedOrigin.x);
             if(hidesideView) {
                 self.panGestureVelocity = velocity.x;
                 [self setSlideControllerState:KSSlideControllerStateClosed];
-            } else {
+            }
+            else {
                 self.panGestureVelocity = 0;
                 [self setSlideControllerState:KSSlideControllerStateRightViewOpen];
             }
         }
-    } else {
+    }
+    else {
         [self setControllerOffset:translatedPoint.x];
     }
     
-    if (translatedPoint.x == 0)
+    if (translatedPoint.x == 0) {
         self.panDirection = KSSlideControllerPanDirectionNone;
+    }
 }
 
 - (void) handleLeftPan:(UIPanGestureRecognizer *)recognizer {
-    if(!self.rightViewController && self.slideControllerState == KSSlideControllerStateClosed) return;
+    if(!self.rightViewController && self.slideControllerState == KSSlideControllerStateClosed) {
+        return;
+    }
     
     UIView *view = [self.centerViewController view];
     
     CGPoint translatedPoint = [recognizer translationInView:view];
     CGPoint adjustedOrigin = panGestureOrigin;
-    if (self.slideControllerState == KSSlideControllerStateRightViewOpen)
+    if (self.slideControllerState == KSSlideControllerStateRightViewOpen) {
         adjustedOrigin.x = -self.rightViewWidth;
-    else if (self.slideControllerState == KSSlideControllerStateLeftViewOpen)
+    }
+    else if (self.slideControllerState == KSSlideControllerStateLeftViewOpen) {
         adjustedOrigin.x = self.leftViewWidth;
+    }
     translatedPoint = CGPointMake(adjustedOrigin.x + translatedPoint.x,
                                   adjustedOrigin.y + translatedPoint.y);
     
@@ -991,7 +1005,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     if(self.slideControllerState == KSSlideControllerStateLeftViewOpen) {
         // don't let the pan go less than 0 if the side view is already open
         translatedPoint.x = MAX(translatedPoint.x, 0);
-    } else {
+    }
+    else {
         // we are opening the sideView
         translatedPoint.x = MIN(translatedPoint.x, 0);
     }
@@ -1006,26 +1021,31 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
             if(showsideView) {
                 self.panGestureVelocity = velocity.x;
                 [self setSlideControllerState:KSSlideControllerStateRightViewOpen];
-            } else {
+            }
+            else {
                 self.panGestureVelocity = 0;
                 [self setSlideControllerState:KSSlideControllerStateClosed];
             }
-        } else {
+        }
+        else {
             BOOL hidesideView = (finalX < adjustedOrigin.x);
             if(hidesideView) {
                 self.panGestureVelocity = velocity.x;
                 [self setSlideControllerState:KSSlideControllerStateClosed];
-            } else {
+            }
+            else {
                 self.panGestureVelocity = 0;
                 [self setSlideControllerState:KSSlideControllerStateLeftViewOpen];
             }
         }
-	} else {
+	}
+    else {
         [self setControllerOffset:translatedPoint.x];
     }
     
-    if (translatedPoint.x == 0)
+    if (translatedPoint.x == 0) {
         self.panDirection = KSSlideControllerPanDirectionNone;
+    }
 }
 
 - (void)centerViewControllerTapped:(id)sender {
