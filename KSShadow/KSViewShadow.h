@@ -26,12 +26,22 @@
 @property (nonatomic, assign) CGFloat opacity;
 @property (nonatomic, strong) UIColor *color;
 @property (nonatomic, assign) UIView *shadowedView;
+
+// Alpha should only be used for gradual showing/hiding of shadow.
+// Opacity should be used to adjust transparency of shadow.
 @property (nonatomic, assign) CGFloat alpha;
 
+// Create KSViewShadow attached to specified view.
 + (KSViewShadow *)shadowWithView:(UIView *)shadowedView;
+
+// Create KSViewShadow with specified color, radius, and opacity.
 + (KSViewShadow *)shadowWithColor:(UIColor *)color radius:(CGFloat)radius opacity:(CGFloat)opacity;
 
+// Refresh shadow should be called after any changes to the view being shadowed.
 - (void)refresh;
+
+// Call these methods in when orientation will change to
+// prepare shadow for animated transition.
 - (void)shadowedViewWillRotate;
 - (void)shadowedViewDidRotate;
 

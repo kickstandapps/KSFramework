@@ -56,7 +56,7 @@
     UINavigationController *navigationController = self.slideController.centerViewController;
     ((UIViewController *)navigationController.viewControllers.lastObject).title = [NSString stringWithFormat:@"Demo #%d-%d", indexPath.section, indexPath.row];
 
-    [self.slideController setMenuState:KSSlideControllerStateClosed];
+    [self.slideController setSlideControllerState:KSSlideControllerStateClosed];
 }
 
 @end

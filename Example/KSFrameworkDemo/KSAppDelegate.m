@@ -89,11 +89,11 @@
 #pragma mark - UIBarButtonItem Callbacks
 
 - (void)leftSideMenuButtonPressed:(id)sender {
-    [self.slideController toggleLeftSideMenuCompletion:nil];
+    [self.slideController toggleLeftViewWithCompletion:nil];
 }
 
 - (void)rightSideMenuButtonPressed:(id)sender {
-    [self.slideController toggleRightSideMenuCompletion:nil];
+    [self.slideController toggleRightViewWithCompletion:nil];
 }
 
 

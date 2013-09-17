@@ -26,33 +26,33 @@
 
 - (IBAction)switchMenuDepth:(id)sender
 {
-    self.navigationController.slideController.showMenuOverContent = ((UISwitch *)sender).on;
+    self.navigationController.slideController.sideViewsOnTop = ((UISwitch *)sender).on;
 }
 
 - (IBAction)slideParallaxFactor:(id)sender
 {
-    self.navigationController.slideController.menuSlideParallaxFactor = ((UISlider *)sender).value;
+    self.navigationController.slideController.slideParallaxFactor = ((UISlider *)sender).value;
 }
 
 - (IBAction)slideScaleFactor:(id)sender
 {
-    self.navigationController.slideController.menuSlideScaleFactor = ((UISlider *)sender).value;
+    self.navigationController.slideController.slideScaleFactor = ((UISlider *)sender).value;
 }
 
 - (IBAction)slideTintOpacity:(id)sender
 {
-    self.navigationController.slideController.menuSlideTintColor = [UIColor whiteColor];
-    self.navigationController.slideController.menuSlideTintOpacity = ((UISlider *)sender).value;
+    self.navigationController.slideController.slideTintColor = [UIColor whiteColor];
+    self.navigationController.slideController.slideTintOpacity = ((UISlider *)sender).value;
 }
 
 - (IBAction)slideMenuBlurFactor:(id)sender
 {
-    self.navigationController.slideController.menuBlurFactor = ((UISlider *)sender).value;
+    self.navigationController.slideController.sideViewBlurFactor = ((UISlider *)sender).value;
 }
 
 - (IBAction)slideContentBlurFactor:(id)sender
 {
-    self.navigationController.slideController.contentBlurFactor = ((UISlider *)sender).value;
+    self.navigationController.slideController.centerViewBlurFactor = ((UISlider *)sender).value;
 }
 
 @end

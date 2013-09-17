@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-
 @interface UIImage (BoxBlur)
 
 // Blur the current image with a box blur algorithm

@@ -20,26 +20,30 @@
 #import <UIKit/UIKit.h>
 #import "KSViewShadow.h"
 
+// Name of event pushed to NSNotificationCenter when slide controller state has changed.
 extern NSString * const KSSlideControllerStateNotificationEvent;
 
+// Used to determine which, if any, views will cause gestures to slide views.
 typedef enum {
-    KSSlideControllerPanModeNone = 0, // pan disabled
-    KSSlideControllerPanModeCenterViewController = 1 << 0, // enable panning on the centerViewController
-    KSSlideControllerPanModeSideMenu = 1 << 1, // enable panning on side menus
-    KSSlideControllerPanModeDefault = KSSlideControllerPanModeCenterViewController | KSSlideControllerPanModeSideMenu
+    KSSlideControllerPanModeNone = 0,
+    KSSlideControllerPanModeCenterView = 1 << 0,
+    KSSlideControllerPanModeSideView = 1 << 1,
+    KSSlideControllerPanModeDefault = KSSlideControllerPanModeCenterView | KSSlideControllerPanModeSideView
 } KSSlideControllerPanMode;
 
+// Used to indicate the state of the slide controller.
 typedef enum {
-    KSSlideControllerStateClosed, // the menu is closed
-    KSSlideControllerStateLeftMenuOpen, // the left-hand menu is open
-    KSSlideControllerStateRightMenuOpen // the right-hand menu is open
+    KSSlideControllerStateClosed,
+    KSSlideControllerStateLeftViewOpen,
+    KSSlideControllerStateRightViewOpen
 } KSSlideControllerState;
 
+// Events that will be called to NSNotificationCenter
 typedef enum {
-    KSSlideControllerStateEventMenuWillOpen, // the menu is going to open
-    KSSlideControllerStateEventMenuDidOpen, // the menu finished opening
-    KSSlideControllerStateEventMenuWillClose, // the menu is going to close
-    KSSlideControllerStateEventMenuDidClose // the menu finished closing
+    KSSlideControllerStateEventSideViewWillOpen,
+    KSSlideControllerStateEventSideViewDidOpen,
+    KSSlideControllerStateEventSideViewWillClose,
+    KSSlideControllerStateEventSideViewDidClose
 } KSSlideControllerStateEvent;
 
 
@@ -59,6 +63,7 @@ typedef enum {
 
 @interface KSSlideController : UIViewController<UIGestureRecognizerDelegate>
 
+// Create KSSlideController with initial view controllers. Sending "nil" is acceptable.
 + (KSSlideController *)slideControllerWithCenterViewController:(id)centerViewController
                                             leftViewController:(id)leftViewController
                                            rightViewController:(id)rightViewController;
@@ -67,58 +72,60 @@ typedef enum {
 @property (nonatomic, strong) UIViewController *leftViewController;
 @property (nonatomic, strong) UIViewController *rightViewController;
 
-@property (nonatomic, assign) KSSlideControllerState menuState;
+@property (nonatomic, assign) KSSlideControllerState slideControllerState;
 @property (nonatomic, assign) KSSlideControllerPanMode panMode;
 
-// menu open/close animation duration -- user can pan faster than default duration, max duration sets the limit
-@property (nonatomic, assign) CGFloat menuAnimationDefaultDuration;
-@property (nonatomic, assign) CGFloat menuAnimationMaxDuration;
+@property (nonatomic, assign) CGFloat sideViewWidth;
+@property (nonatomic, assign) CGFloat leftViewWidth;
+@property (nonatomic, assign) CGFloat rightViewWidth;
 
-// width of the side menus
-@property (nonatomic, assign) CGFloat menuWidth;
-@property (nonatomic, assign) CGFloat leftMenuWidth;
-@property (nonatomic, assign) CGFloat rightMenuWidth;
+// Shadows are only shown for view "on top".
+@property (nonatomic, strong) KSViewShadow *centerViewShadow;
+@property (nonatomic, strong) KSViewShadow *leftViewShadow;
+@property (nonatomic, strong) KSViewShadow *rightViewShadow;
 
-// shadows - content shadow only shown when showMenuOverContent = NO
-//         - menu shadows only shown when showMenuOverContent = YES
-@property (nonatomic, strong) KSViewShadow *contentShadow;
-@property (nonatomic, strong) KSViewShadow *leftMenuShadow;
-@property (nonatomic, strong) KSViewShadow *rightMenuShadow;
+// Overlap of views. Default is "NO" (center view slides over side views).
+@property (nonatomic, assign) BOOL sideViewsOnTop;
 
-// menu depth
-@property (nonatomic, assign) BOOL showMenuOverContent;
+// Open/close animation duration -- user can pan faster than default duration.
+@property (nonatomic, assign) CGFloat slideAnimationDuration;
 
-// menu slide-in animation
-@property (nonatomic, assign) CGFloat menuSlideParallaxFactor;
-// 0 = no menu movement (default)
-// > 0 & < 1 = ratio of movement to menu width
-// 1 = full menu movement
+// Adjust how the background view slides in or out.
+// 0 = no background view movement (default).
+// > 0 & < 1 = ratio of movement to side view width.
+// 1 = full background view movement.
+@property (nonatomic, assign) CGFloat slideParallaxFactor;
 
-// menu slide in scaling
-@property (nonatomic, assign) CGFloat menuSlideScaleFactor;
-// 1 = no scaling (default)
-// < 1 = scale of menu or content when not focused upon
+// Adjust how the background view scales as it slides in or out.
+// 1 = no scaling (default).
+// < 1 = scale of background view when not focused upon.
+@property (nonatomic, assign) CGFloat slideScaleFactor;
 
-// menu slide in tint and opacity (over inactive center view)
-@property (nonatomic, strong) UIColor *menuSlideTintColor;
-@property (nonatomic, assign) CGFloat menuSlideTintOpacity;
+// Adjust tint and opacity over inactive center view.
+@property (nonatomic, strong) UIColor *slideTintColor;
+@property (nonatomic, assign) CGFloat slideTintOpacity;
 
-// menu slide in blurring (blur -> sharp as menu opens)
-@property (nonatomic, assign) CGFloat menuBlurFactor;
-// 0 = no blurring (default)
-// 1 = full blur
+// Slide in blurring of side views (blur -> sharp as side view opens).
+// 0 = no blurring (default).
+// 1 = full blur.
+@property (nonatomic, assign) CGFloat sideViewBlurFactor;
 
-// content slide out blurring (sharp -> blur as menu opens)
-@property (nonatomic, assign) CGFloat contentBlurFactor;
-// 0 = no blurring (default)
-// 1 = full blur
+// Slide out blurring of center view (sharp -> blur as side view opens).
+// 0 = no blurring (default).
+// 1 = full blur.
+@property (nonatomic, assign) CGFloat centerViewBlurFactor;
 
-- (void)toggleLeftSideMenuCompletion:(void (^)(void))completion;
-- (void)toggleRightSideMenuCompletion:(void (^)(void))completion;
-- (void)setMenuState:(KSSlideControllerState)menuState completion:(void (^)(void))completion;
-- (void)setMenuWidth:(CGFloat)menuWidth animated:(BOOL)animated;
-- (void)setLeftMenuWidth:(CGFloat)leftMenuWidth animated:(BOOL)animated;
-- (void)setRightMenuWidth:(CGFloat)rightMenuWidth animated:(BOOL)animated;
+// Toggle side views open and close. Can pass in optional completion block.
+- (void)toggleLeftViewWithCompletion:(void (^)(void))completion;
+- (void)toggleRightViewWithCompletion:(void (^)(void))completion;
+
+// Set KSSlideController state explicitly. Can pass in optional completion block.
+- (void)setSlideControllerState:(KSSlideControllerState)state completion:(void (^)(void))completion;
+
+// Set the width of side views.
+- (void)setSideViewWidth:(CGFloat)sideViewWidth animated:(BOOL)animated;
+- (void)setLeftViewWidth:(CGFloat)leftViewWidth animated:(BOOL)animated;
+- (void)setRightViewWidth:(CGFloat)rightViewWidth animated:(BOOL)animated;
 
 // can be used to attach a pan gesture recognizer to a custom view
 - (UIPanGestureRecognizer *)panGestureRecognizer;

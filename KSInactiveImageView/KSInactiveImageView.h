@@ -8,6 +8,8 @@
 
 #import <UIKit/UIKit.h>
 
+// Used to determine which, if any, sides the view should hold
+// to when scaled down.
 typedef enum {
     KSScaleEdgeHoldNone     = 0,
     KSScaleEdgeHoldTop      = 1 << 0,
@@ -17,6 +19,7 @@ typedef enum {
 } KSScaleEdgeHold;
 
 @interface KSInactiveImageView : UIView
+
 
 #pragma mark - UIImageView Properties and Methods
 
