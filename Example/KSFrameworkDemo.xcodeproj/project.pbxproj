@@ -32,8 +32,8 @@
 /* Begin PBXFileReference section */
 		1F381DA717E4084400427799 /* KSSlideController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KSSlideController.h; path = ../KSSlideController/KSSlideController.h; sourceTree = "<group>"; };
 		1F381DA817E4084400427799 /* KSSlideController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KSSlideController.m; path = ../KSSlideController/KSSlideController.m; sourceTree = "<group>"; };
-		1F381DAB17E40F0000427799 /* KSViewShadow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KSViewShadow.h; path = ../KSShadow/KSViewShadow.h; sourceTree = "<group>"; };
-		1F381DAC17E40F0000427799 /* KSViewShadow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KSViewShadow.m; path = ../KSShadow/KSViewShadow.m; sourceTree = "<group>"; };
+		1F381DAB17E40F0000427799 /* KSViewShadow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KSViewShadow.m; path = ../KSViewShadow/KSViewShadow.m; sourceTree = "<group>"; };
+		1F381DAC17E40F0000427799 /* KSViewShadow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KSViewShadow.m; path = ../KSViewShadow/KSViewShadow.m; sourceTree = "<group>"; };
 		1F381DAE17E412E800427799 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		1F381DB017E412EC00427799 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		1F381DB917E4168500427799 /* KSImageAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KSImageAdditions.h; path = ../KSImageAdditions/KSImageAdditions.h; sourceTree = "<group>"; };
@@ -87,13 +87,13 @@
 			name = KSSlideController;
 			sourceTree = "<group>";
 		};
-		1F381DAA17E40E7000427799 /* KSShadow */ = {
+		1F381DAA17E40E7000427799 /* KSViewShadow */ = {
 			isa = PBXGroup;
 			children = (
-				1F381DAB17E40F0000427799 /* KSViewShadow.h */,
+				1F381DAB17E40F0000427799 /* KSViewShadow.m */,
 				1F381DAC17E40F0000427799 /* KSViewShadow.m */,
 			);
-			name = KSShadow;
+			name = KSViewShadow;
 			sourceTree = "<group>";
 		};
 		1F381DB217E413A000427799 /* KSImageAdditions */ = {
@@ -119,7 +119,7 @@
 			children = (
 				1F381DBC17E41D2600427799 /* KSInactiveImageView */,
 				1F381DB217E413A000427799 /* KSImageAdditions */,
-				1F381DAA17E40E7000427799 /* KSShadow */,
+				1F381DAA17E40E7000427799 /* KSViewShadow */,
 				1F381DA017E4054800427799 /* KSSlideController */,
 				1F96830617E4046A00C5EAB9 /* KSFrameworkDemo */,
 				1F9682FF17E4046A00C5EAB9 /* Frameworks */,
