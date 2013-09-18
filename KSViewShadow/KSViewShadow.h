@@ -21,10 +21,19 @@
 
 @interface KSViewShadow : NSObject
 
+// Enable or disable the shadow (default = YES)
 @property (nonatomic, assign) BOOL enabled;
+
+// Shadow radius (default = 10.0f)
 @property (nonatomic, assign) CGFloat radius;
-@property (nonatomic, assign) CGFloat opacity;
+
+// Shadow color (default = black)
 @property (nonatomic, strong) UIColor *color;
+
+// Shadow opacity (default = 0.75f)
+@property (nonatomic, assign) CGFloat opacity;
+
+// Set view to be shadowed
 @property (nonatomic, assign) UIView *shadowedView;
 
 // Alpha should only be used for gradual showing/hiding of shadow.
@@ -32,6 +41,9 @@
 @property (nonatomic, assign) CGFloat alpha;
 
 // Create KSViewShadow attached to specified view.
+// Default .color = [UIColor blackColor]
+// Default .radius = 10.0f
+// Default .opacity = 0.75f
 + (KSViewShadow *)shadowWithView:(UIView *)shadowedView;
 
 // Create KSViewShadow with specified color, radius, and opacity.
