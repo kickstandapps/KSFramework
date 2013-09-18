@@ -5,8 +5,6 @@ This controller adds a configurable shadow to any view that is passed to it.
 
 Some code for this control was forked from the [MFSideMenu](https://github.com/mikefrederick/MFSideMenu) project by Michael Frederick.
 
-=======
-
 ##Features
 
 - Works with any view
