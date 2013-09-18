@@ -1,9 +1,9 @@
 #KSSlideController
-*part of KSFramework*
+__*Part of KSFramework*__
 
 This controller allows the use of slide in view controllers on both sides of the screen. This functionality was originally seen in apps such as Facebook for presenting a menu. However, KSSlideController is not restricted to just menus. Through the use of configurable properties, a broad range of implementations can be created.
 
-Some code for this control was forked from the MFSideMenu project by Michael Frederick.
+Some code for this control was forked from the [MFSideMenu](https://github.com/mikefrederick/MFSideMenu) project by Michael Frederick.
 
 =======
 
@@ -169,7 +169,7 @@ KSSlideController gives you the option to show a shadow between the center view 
 @property (nonatomic, strong) KSViewShadow *rightViewShadow;
 ```
 
-See documentation for KSViewShadow for available shadow parameters.
+See documentation for [KSViewShadow](https://github.com/kickstandapps/KSFramework/tree/master/KSViewShadow) for available shadow parameters.
 
 ##Contact
 
