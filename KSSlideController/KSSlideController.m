@@ -99,7 +99,7 @@ typedef enum {
 @synthesize panDirection;
 @synthesize leftViewWidth = _leftViewWidth;
 @synthesize rightViewWidth = _rightViewWidth;
-@synthesize sideViewsOnTop = _sideViewsOnTop;
+@synthesize sideViewsInFront = _sideViewsInFront;
 @synthesize slideParallaxFactor = _slideParallaxFactor;
 @synthesize slideScaleFactor = _slideScaleFactor;
 @synthesize slideTintColor = _slideTintColor;
@@ -570,7 +570,7 @@ typedef enum {
     };
     
     if(animated) {
-        CGFloat centerViewControllerXPosition = CGRectGetMinX(self.centerContainer.frame)/(self.sideViewsOnTop ? self.slideParallaxFactor : 1);
+        CGFloat centerViewControllerXPosition = CGRectGetMinX(self.centerContainer.frame)/(self.sideViewsInFront ? self.slideParallaxFactor : 1);
         
         CGFloat duration = [self animationDurationFromStartPosition:centerViewControllerXPosition toEndPosition:offset];
                 
@@ -607,9 +607,9 @@ typedef enum {
     CGRect leftFrame = self.leftContainer.frame;
     CGRect centerFrame = self.centerContainer.frame;
     CGRect rightFrame = self.rightContainer.frame;
-    leftFrame.origin.x = MIN(0, MAX(-self.leftViewWidth, offset - self.leftViewWidth)) * (self.sideViewsOnTop ? 1 : self.slideParallaxFactor);
-    centerFrame.origin.x = offset * (self.sideViewsOnTop ? self.slideParallaxFactor : 1);
-    rightFrame.origin.x = centerFrame.size.width - self.rightViewWidth * (1 - (self.sideViewsOnTop ? 1 : self.slideParallaxFactor)) + offset * (self.sideViewsOnTop ? 1 : self.slideParallaxFactor);
+    leftFrame.origin.x = MIN(0, MAX(-self.leftViewWidth, offset - self.leftViewWidth)) * (self.sideViewsInFront ? 1 : self.slideParallaxFactor);
+    centerFrame.origin.x = offset * (self.sideViewsInFront ? self.slideParallaxFactor : 1);
+    rightFrame.origin.x = centerFrame.size.width - self.rightViewWidth * (1 - (self.sideViewsInFront ? 1 : self.slideParallaxFactor)) + offset * (self.sideViewsInFront ? 1 : self.slideParallaxFactor);
     
     self.leftContainer.frame = leftFrame;
     self.centerContainer.frame = centerFrame;
@@ -620,19 +620,22 @@ typedef enum {
     
     
     // handle inactive views
-    if (offset != 0 && self.centerOverlay.hidden == YES && (self.centerViewBlurFactor || (self.sideViewsOnTop && self.slideScaleFactor))) {
-        self.centerOverlay.image = [self.centerViewController view].screenshot;
+    if (offset != 0 && self.centerOverlay.hidden == YES && (self.slideTintOpacity || self.centerViewBlurFactor || (self.sideViewsInFront && self.slideScaleFactor != 1))) {
+        if (self.centerViewBlurFactor || (self.sideViewsInFront && self.slideScaleFactor != 1))
+        {
+            self.centerOverlay.image = [self.centerViewController view].screenshot;
+            [self.centerViewController view].hidden = YES;
+        }
         self.centerOverlay.hidden = NO;
-        [self.centerViewController view].hidden = YES;
     }
     
-    if (offset > 0 && offset < self.leftViewWidth && self.leftOverlay.hidden == YES && (self.sideViewBlurFactor || (!self.sideViewsOnTop && self.slideScaleFactor))) {
+    if (offset > 0 && offset < self.leftViewWidth && self.leftOverlay.hidden == YES && (self.sideViewBlurFactor || (!self.sideViewsInFront && self.slideScaleFactor != 1))) {
         self.leftOverlay.image = self.leftViewController.view.screenshot;
         self.leftOverlay.hidden = NO;
         self.leftViewController.view.hidden = YES;
     }
 
-    if (offset < 0 && offset > -self.rightViewWidth && self.rightOverlay.hidden == YES && (self.sideViewBlurFactor || (!self.sideViewsOnTop && self.slideScaleFactor))) {
+    if (offset < 0 && offset > -self.rightViewWidth && self.rightOverlay.hidden == YES && (self.sideViewBlurFactor || (!self.sideViewsInFront && self.slideScaleFactor != 1))) {
         self.rightOverlay.image = self.rightViewController.view.screenshot;
         self.rightOverlay.hidden = NO;
         self.rightViewController.view.hidden = YES;
@@ -657,7 +660,7 @@ typedef enum {
         self.rightOverlay.edgeHold = KSScaleEdgeHoldLeft;
     }
     
-    if (self.sideViewsOnTop) {
+    if (self.sideViewsInFront) {
         self.centerOverlay.scale = 1 - (slideRatio * (1 - self.slideScaleFactor));
         self.leftOverlay.scale = 1;
         self.rightOverlay.scale = 1;
@@ -697,7 +700,7 @@ typedef enum {
     CGRect leftFrame = self.leftContainer.frame;
     leftFrame.size.width = self.leftViewWidth;
     leftFrame.size.height = self.view.bounds.size.height;
-    leftFrame.origin.x = -self.leftViewWidth * (self.sideViewsOnTop ? 1 : self.slideParallaxFactor);
+    leftFrame.origin.x = -self.leftViewWidth * (self.sideViewsInFront ? 1 : self.slideParallaxFactor);
     leftFrame.origin.y = 0;
     self.leftContainer.frame = leftFrame;
     self.leftContainer.autoresizingMask = UIViewAutoresizingFlexibleRightMargin|UIViewAutoresizingFlexibleHeight;
@@ -709,7 +712,7 @@ typedef enum {
     rightFrame.size.width = self.rightViewWidth;
     rightFrame.size.height = self.view.bounds.size.height;
     rightFrame.origin.y = 0;
-    rightFrame.origin.x = self.view.bounds.size.width - self.rightViewWidth * (1 - (self.sideViewsOnTop ? 1 : self.slideParallaxFactor));
+    rightFrame.origin.x = self.view.bounds.size.width - self.rightViewWidth * (1 - (self.sideViewsInFront ? 1 : self.slideParallaxFactor));
     self.rightContainer.frame = rightFrame;
     self.rightContainer.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleHeight;
 }
@@ -778,16 +781,18 @@ typedef enum {
 #pragma mark -
 #pragma mark - Side View Sliding Options
 
-- (void)setSideViewsOnTop:(BOOL)sideViewsOnTop
+- (void)setSideViewsInFront:(BOOL)sideViewsOnTop
 {
-    _sideViewsOnTop = sideViewsOnTop;
+    _sideViewsInFront = sideViewsOnTop;
     
-    if (_sideViewsOnTop) {
+    if (_sideViewsInFront) {
         [self.view sendSubviewToBack:self.centerContainer];
     }
     else {
         [self.view bringSubviewToFront:self.centerContainer];
     }
+    
+    [self setSlideControllerState:self.slideControllerState];
 }
 
 - (void)setSideViewSlideParallaxFactor:(CGFloat)sideViewSlideParallaxFactor {
@@ -798,9 +803,9 @@ typedef enum {
     _slideScaleFactor = MAX(0, MIN(1, sideViewSlideScaleFactor));
 }
 
-- (void)setSideViewSlideTintColor:(UIColor *)sideViewSlideTintColor {
-    _slideTintColor = sideViewSlideTintColor;
-    self.centerOverlay.tintColor = sideViewSlideTintColor;
+- (void)setSlideTintColor:(UIColor *)slideTintColor {
+    _slideTintColor = slideTintColor;
+    self.centerOverlay.tintColor = slideTintColor;
 }
 
 - (void)setSideViewSlideTintOpacity:(CGFloat)sideViewSlideTintOpacity {

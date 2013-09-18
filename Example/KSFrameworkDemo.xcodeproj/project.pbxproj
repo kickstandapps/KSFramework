@@ -32,7 +32,7 @@
 /* Begin PBXFileReference section */
 		1F381DA717E4084400427799 /* KSSlideController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KSSlideController.h; path = ../KSSlideController/KSSlideController.h; sourceTree = "<group>"; };
 		1F381DA817E4084400427799 /* KSSlideController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KSSlideController.m; path = ../KSSlideController/KSSlideController.m; sourceTree = "<group>"; };
-		1F381DAB17E40F0000427799 /* KSViewShadow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KSViewShadow.m; path = ../KSViewShadow/KSViewShadow.m; sourceTree = "<group>"; };
+		1F381DAB17E40F0000427799 /* KSViewShadow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KSViewShadow.h; path = ../KSViewShadow/KSViewShadow.h; sourceTree = "<group>"; };
 		1F381DAC17E40F0000427799 /* KSViewShadow.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KSViewShadow.m; path = ../KSViewShadow/KSViewShadow.m; sourceTree = "<group>"; };
 		1F381DAE17E412E800427799 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		1F381DB017E412EC00427799 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
@@ -90,7 +90,7 @@
 		1F381DAA17E40E7000427799 /* KSViewShadow */ = {
 			isa = PBXGroup;
 			children = (
-				1F381DAB17E40F0000427799 /* KSViewShadow.m */,
+				1F381DAB17E40F0000427799 /* KSViewShadow.h */,
 				1F381DAC17E40F0000427799 /* KSViewShadow.m */,
 			);
 			name = KSViewShadow;

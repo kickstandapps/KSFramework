@@ -26,7 +26,7 @@
 
 - (IBAction)switchMenuDepth:(id)sender
 {
-    self.navigationController.slideController.sideViewsOnTop = ((UISwitch *)sender).on;
+    self.navigationController.slideController.sideViewsInFront = ((UISwitch *)sender).on;
 }
 
 - (IBAction)slideParallaxFactor:(id)sender

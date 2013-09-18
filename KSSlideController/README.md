@@ -163,7 +163,7 @@ Control how the center view and each side view slide.
 KSSlideController gives you the option to show a shadow between the center view & the side views.
 
 ```objective-c
-// Shadows are only shown for view "on top".
+// Shadows are only shown for view "in front".
 @property (nonatomic, strong) KSViewShadow *centerViewShadow;
 @property (nonatomic, strong) KSViewShadow *leftViewShadow;
 @property (nonatomic, strong) KSViewShadow *rightViewShadow;

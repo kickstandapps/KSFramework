@@ -79,13 +79,13 @@ typedef enum {
 @property (nonatomic, assign) CGFloat leftViewWidth;
 @property (nonatomic, assign) CGFloat rightViewWidth;
 
-// Shadows are only shown for view "on top".
+// Shadows are only shown for view "in front".
 @property (nonatomic, strong) KSViewShadow *centerViewShadow;
 @property (nonatomic, strong) KSViewShadow *leftViewShadow;
 @property (nonatomic, strong) KSViewShadow *rightViewShadow;
 
 // Overlap of views. Default is "NO" (center view slides over side views).
-@property (nonatomic, assign) BOOL sideViewsOnTop;
+@property (nonatomic, assign) BOOL sideViewsInFront;
 
 // Open/close animation duration -- user can pan faster than default duration.
 @property (nonatomic, assign) CGFloat slideAnimationDuration;

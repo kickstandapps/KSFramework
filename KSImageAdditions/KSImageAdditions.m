@@ -126,7 +126,7 @@
     UIGraphicsEndImageContext();
     
     // hack, helps w/ our colors when blurring
-    NSData *imageData = UIImageJPEGRepresentation(image, 0.1); // convert to jpeg
+    NSData *imageData = UIImageJPEGRepresentation(image, 0.5); // convert to jpeg
     image = [UIImage imageWithData:imageData];
     
     return image;
@@ -156,7 +156,7 @@
     UIGraphicsEndImageContext();
 
     // hack, helps w/ our colors when blurring
-    NSData *imageData = UIImageJPEGRepresentation(image, 0.1); // convert to jpeg
+    NSData *imageData = UIImageJPEGRepresentation(image, 0.5); // convert to jpeg
     image = [UIImage imageWithData:imageData];
 
     return image;
