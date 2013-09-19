@@ -37,6 +37,7 @@ Add the `KSSlideController` folder to your project. Add required `KSFramework` f
 - `KSViewShadow`
 
 ######Required Frameworks
+- `Accelerate.framework`
 - `QuartzCore.framework`
 
 ##Usage
