@@ -1,7 +1,7 @@
 #KSSlideController
 __*Part of KSFramework*__
 
-This controller allows the use of slide in view controllers on both sides of the screen. This functionality was originally seen in apps such as Facebook for presenting a menu. However, KSSlideController is not restricted to just menus. Through the use of configurable properties, a broad range of implementations can be created.
+This controller allows the use of slide in view controllers on both sides of the screen. This functionality was originally seen in apps such as Facebook for presenting a menu. However, `KSSlideController` is not restricted to just menus. Through the use of configurable properties, a broad range of implementations can be created.
 
 Some code for this control was forked from the [MFSideMenu](https://github.com/mikefrederick/MFSideMenu) project by Michael Frederick.
 
