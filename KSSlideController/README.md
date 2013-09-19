@@ -5,10 +5,6 @@ This controller allows the use of slide in view controllers on both sides of the
 
 Some code for this control was forked from the [MFSideMenu](https://github.com/mikefrederick/MFSideMenu) project by Michael Frederick.
 
-=======
-
-![](http://i.imgur.com/Ah5mP.png)  &nbsp;  ![](http://i.imgur.com/KN4IB.png)
-
 ##Features
 
 - Universal device support (iPhone + iPad)
@@ -24,7 +20,8 @@ Some code for this control was forked from the [MFSideMenu](https://github.com/m
 ##Installation
 
 ####CocoaPods
-Add `pod '****'` to your Podfile.
+Add the following to your Podfile.
+`pod 'KSFramework/KSSlideController', '~> 1.0'`
 
 ####Manually
 Add the `KSSlideController` folder to your project. Add required `KSFramework` folders to your project. Add required Apple frameworks to your project. 

@@ -15,7 +15,9 @@ Some code for this control was forked from the [MFSideMenu](https://github.com/m
 ##Installation
 
 ####CocoaPods
-Add `pod '****'` to your Podfile.
+Add the following to your Podfile.
+`pod 'KSFramework/KSViewShadow', '~> 1.0'`
+
 
 ####Manually
 Add the `KSViewShadow` folder to your project. Add required Apple frameworks to your project. 

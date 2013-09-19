@@ -14,7 +14,8 @@ This controller uses a box blurring method as shared by Jake Gunderson on his [b
 ##Installation
 
 ####CocoaPods
-Add `pod '****'` to your Podfile.
+Add the following to your Podfile.
+`pod 'KSFramework/KSImageAdditions', '~> 1.0'`
 
 ####Manually
 Add the `KSImageAdditions` folder to your project. Add required Apple frameworks to your project. 

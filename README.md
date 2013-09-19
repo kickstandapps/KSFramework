@@ -5,7 +5,8 @@ An iOS framework containing helpful classes and categories. The framework can be
 ##Installation of Entire KSFramework
 
 ####CocoaPods
-Add `pod '****'` to your Podfile.
+Add the following to your Podfile.
+`pod 'KSFramework', '~> 1.0'`
 
 ####Manually
 Add all `KSFramework` folders to your project except the `Example` folder. Add required Apple frameworks to your project. 

@@ -16,7 +16,8 @@ One potential use is locating the KSInactiveImageView in place of a view and pas
 ##Installation
 
 ####CocoaPods
-Add `pod '****'` to your Podfile.
+Add the following to your Podfile.
+`pod 'KSFramework/KSInactiveImageView', '~> 1.0'`
 
 ####Manually
 Add the `KSInactiveImageView` folder to your project. Add required `KSFramework` folders to your project. Add required Apple frameworks to your project. 
