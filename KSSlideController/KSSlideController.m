@@ -548,6 +548,7 @@ typedef enum {
                 self.centerOverlay.image = nil;
                 self.centerOverlay.hidden = YES;
                 [self.centerViewController view].hidden = NO;
+                [self.centerViewController view].userInteractionEnabled = YES;
                 
                 self.leftContainer.hidden = YES;
                 self.leftOverlay.image = nil;
@@ -573,6 +574,7 @@ typedef enum {
                     self.leftViewController.view.hidden = NO;
                     self.leftViewShadow.shadowedView = self.leftContainer;
                     [self.leftViewShadow refresh];
+                    [self.centerViewController view].userInteractionEnabled = NO;
                     innerCompletion();
                 }];
             }
@@ -588,6 +590,7 @@ typedef enum {
                     self.rightViewController.view.hidden = NO;
                     self.rightViewShadow.shadowedView = self.rightContainer;
                     [self.rightViewShadow refresh];
+                    [self.centerViewController view].userInteractionEnabled = NO;
                     innerCompletion();
                 }];
             }
