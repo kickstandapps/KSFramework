@@ -54,6 +54,7 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {    
     UINavigationController *navigationController = self.slideController.centerViewController;
+
     ((UIViewController *)navigationController.viewControllers.lastObject).title = [NSString stringWithFormat:@"Demo #%d-%d", indexPath.section, indexPath.row];
 
     [self.slideController setSlideControllerState:KSSlideControllerStateClosed];

@@ -24,6 +24,36 @@
     return self;
 }
 
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    if ([self.navigationController.navigationBar respondsToSelector:@selector(setBarTintColor:)]) {
+        self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:0 green:128/255.0 blue:1 alpha:1];
+        self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
+        
+        self.title = self.title;
+    }
+}
+
+- (void)setTitle:(NSString *)title
+{
+    [super setTitle:title];
+    
+    if ([self.navigationController.navigationBar respondsToSelector:@selector(setBarTintColor:)]) {
+        for (UIView *view in self.navigationController.navigationBar.subviews) {
+            if (view.tag != 0) {
+                [view removeFromSuperview];
+            }
+        }
+    
+        UILabel *myLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, 10, 40)];
+        [myLabel setFont:[UIFont fontWithName:@"AvenirNext-DemiBold" size:17]];
+        [myLabel setTextColor:[UIColor whiteColor]];
+        [myLabel setText:title];
+        [self.navigationController.navigationBar.topItem setTitleView:myLabel];
+    }
+}
+
 - (IBAction)switchMenuDepth:(id)sender
 {
     self.navigationController.slideController.sideViewsInFront = ((UISwitch *)sender).on;

@@ -42,6 +42,12 @@
     {
         SideMenuViewController *leftMenuViewController = [[SideMenuViewController alloc] init];
         SideMenuViewController *rightMenuViewController = [[SideMenuViewController alloc] init];
+
+        if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7) {
+            [leftMenuViewController.tableView setContentInset:UIEdgeInsetsMake(20, leftMenuViewController.tableView.contentInset.left, leftMenuViewController.tableView.contentInset.bottom, leftMenuViewController.tableView.contentInset.right)];
+        
+            [rightMenuViewController.tableView setContentInset:UIEdgeInsetsMake(20, rightMenuViewController.tableView.contentInset.left, rightMenuViewController.tableView.contentInset.bottom, rightMenuViewController.tableView.contentInset.right)];
+        }
         
         _slideController = [KSSlideController slideControllerWithCenterViewController:self.navigationController leftViewController:leftMenuViewController rightViewController:rightMenuViewController];
     }
@@ -61,6 +67,10 @@
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
     self.window.rootViewController = self.slideController;
+        
+    [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
+    self.slideController.centerViewStatusBarColor = [UIColor clearColor];
+    self.slideController.sideViewStatusBarColor = [UIColor blackColor];
     
     [self.window makeKeyAndVisible];
     

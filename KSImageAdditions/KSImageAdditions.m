@@ -83,9 +83,6 @@
         NSLog(@"error from convolution %ld", error);
     }
     
-    //create CGImageRef from vImage_Buffer output
-    //1 - CGBitmapContextCreateImage -
-    
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
     
     CGContextRef ctx = CGBitmapContextCreate(outBuffer.data,
@@ -94,7 +91,7 @@
                                              8,
                                              outBuffer.rowBytes,
                                              colorSpace,
-                                             (CGBitmapInfo)kCGImageAlphaNoneSkipLast);
+                                             (CGBitmapInfo)kCGBitmapByteOrder32Little | kCGImageAlphaNoneSkipFirst);
     CGImageRef imageRef = CGBitmapContextCreateImage (ctx);
     
     UIImage *returnImage = [UIImage imageWithCGImage:imageRef];
@@ -121,13 +118,14 @@
 - (UIImage *)screenshot
 {
     UIGraphicsBeginImageContextWithOptions(self.bounds.size,self.opaque,[[UIScreen mainScreen] scale]);
-    [self.layer renderInContext:UIGraphicsGetCurrentContext()];
+    if ([self respondsToSelector:@selector(drawViewHierarchyInRect:afterScreenUpdates:)]) {
+        [self drawViewHierarchyInRect:self.bounds afterScreenUpdates:NO];
+    }
+    else {
+        [self.layer renderInContext:UIGraphicsGetCurrentContext()];
+    }
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
-    
-    // hack, helps w/ our colors when blurring
-    NSData *imageData = UIImageJPEGRepresentation(image, 0.5); // convert to jpeg
-    image = [UIImage imageWithData:imageData];
     
     return image;
 }
@@ -150,14 +148,15 @@
 
     CGContextRef resizedContext = UIGraphicsGetCurrentContext();
     CGContextTranslateCTM(resizedContext, -self.contentOffset.x, -self.contentOffset.y);
-    [self.layer renderInContext:resizedContext];
+    if ([self respondsToSelector:@selector(drawViewHierarchyInRect:afterScreenUpdates:)]) {
+        [self drawViewHierarchyInRect:self.bounds afterScreenUpdates:NO];
+    }
+    else {
+        [self.layer renderInContext:resizedContext];
+    }
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
 
     UIGraphicsEndImageContext();
-
-    // hack, helps w/ our colors when blurring
-    NSData *imageData = UIImageJPEGRepresentation(image, 0.5); // convert to jpeg
-    image = [UIImage imageWithData:imageData];
 
     return image;
 }

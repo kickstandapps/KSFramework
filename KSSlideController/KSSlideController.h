@@ -38,7 +38,7 @@ typedef enum {
     KSSlideControllerStateRightViewOpen
 } KSSlideControllerState;
 
-// Events that will be called to NSNotificationCenter
+// Events that will be called to NSNotificationCenter.
 typedef enum {
     KSSlideControllerStateEventSideViewWillOpen,
     KSSlideControllerStateEventSideViewDidOpen,
@@ -46,6 +46,12 @@ typedef enum {
     KSSlideControllerStateEventSideViewDidClose
 } KSSlideControllerStateEvent;
 
+// Determines whether views continue beneath the status bar or are offset below it.
+// Only applicable on iOS 7.
+typedef enum {
+    KSSlideStatusBarModeOverlay,
+    KSSlideStatusBarModeOffset
+} KSSlideStatusBarMode;
 
 #pragma mark - UIViewController + KSSlideController
 
@@ -83,6 +89,11 @@ typedef enum {
 @property (nonatomic, strong) KSViewShadow *centerViewShadow;
 @property (nonatomic, strong) KSViewShadow *leftViewShadow;
 @property (nonatomic, strong) KSViewShadow *rightViewShadow;
+
+// Status bar properties are only used in iOS 7 when you the have status bar showing
+@property (nonatomic, assign) KSSlideStatusBarMode statusBarMode;
+@property (nonatomic, strong) UIColor *centerViewStatusBarColor;
+@property (nonatomic, strong) UIColor *sideViewStatusBarColor;
 
 // Overlap of views. Default is "NO" (center view slides over side views).
 @property (nonatomic, assign) BOOL sideViewsInFront;
