@@ -23,6 +23,7 @@
 		1F96830D17E4046A00C5EAB9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F96830C17E4046A00C5EAB9 /* main.m */; };
 		1F96831117E4046A00C5EAB9 /* KSAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F96831017E4046A00C5EAB9 /* KSAppDelegate.m */; };
 		1F996D2D17F2793400730C19 /* KSPullDownController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F996D2C17F2793400730C19 /* KSPullDownController.m */; };
+		1F996D3117F7724500730C19 /* DemoPullDownViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F996D3017F7724500730C19 /* DemoPullDownViewController.m */; };
 		1FC0DB0217E813DA00580E20 /* back-arrow.png in Resources */ = {isa = PBXBuildFile; fileRef = 1FC0DAFD17E813DA00580E20 /* back-arrow.png */; };
 		1FC0DB0317E813DA00580E20 /* back-arrow@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1FC0DAFE17E813DA00580E20 /* back-arrow@2x.png */; };
 		1FC0DB0417E813DA00580E20 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1FC0DAFF17E813DA00580E20 /* Default-568h@2x.png */; };
@@ -56,8 +57,10 @@
 		1F96830E17E4046A00C5EAB9 /* KSFrameworkDemo-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "KSFrameworkDemo-Prefix.pch"; sourceTree = "<group>"; };
 		1F96830F17E4046A00C5EAB9 /* KSAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KSAppDelegate.h; sourceTree = "<group>"; };
 		1F96831017E4046A00C5EAB9 /* KSAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KSAppDelegate.m; sourceTree = "<group>"; };
-		1F996D2B17F2793400730C19 /* KSPullDownController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KSPullDownController.h; path = KSPullDownController/KSPullDownController.h; sourceTree = "<group>"; };
-		1F996D2C17F2793400730C19 /* KSPullDownController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KSPullDownController.m; path = KSPullDownController/KSPullDownController.m; sourceTree = "<group>"; };
+		1F996D2B17F2793400730C19 /* KSPullDownController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KSPullDownController.h; path = ../KSPullDownController/KSPullDownController.h; sourceTree = "<group>"; };
+		1F996D2C17F2793400730C19 /* KSPullDownController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KSPullDownController.m; path = ../KSPullDownController/KSPullDownController.m; sourceTree = "<group>"; };
+		1F996D2F17F7724500730C19 /* DemoPullDownViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoPullDownViewController.h; sourceTree = "<group>"; };
+		1F996D3017F7724500730C19 /* DemoPullDownViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoPullDownViewController.m; sourceTree = "<group>"; };
 		1FC0DAFD17E813DA00580E20 /* back-arrow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back-arrow.png"; sourceTree = "<group>"; };
 		1FC0DAFE17E813DA00580E20 /* back-arrow@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "back-arrow@2x.png"; sourceTree = "<group>"; };
 		1FC0DAFF17E813DA00580E20 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
@@ -156,6 +159,8 @@
 			children = (
 				1F96830F17E4046A00C5EAB9 /* KSAppDelegate.h */,
 				1F96831017E4046A00C5EAB9 /* KSAppDelegate.m */,
+				1F996D2F17F7724500730C19 /* DemoPullDownViewController.h */,
+				1F996D3017F7724500730C19 /* DemoPullDownViewController.m */,
 				1F381DD317E60AD900427799 /* DemoSlideViewController.h */,
 				1F381DD417E60AD900427799 /* DemoSlideViewController.m */,
 				1F381DD517E60AD900427799 /* DemoSlideViewController.xib */,
@@ -273,6 +278,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1F996D3117F7724500730C19 /* DemoPullDownViewController.m in Sources */,
 				1F381DC417E4448B00427799 /* SideMenuViewController.m in Sources */,
 				1F996D2D17F2793400730C19 /* KSPullDownController.m in Sources */,
 				1F96830D17E4046A00C5EAB9 /* main.m in Sources */,
