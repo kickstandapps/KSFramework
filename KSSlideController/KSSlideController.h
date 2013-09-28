@@ -126,6 +126,9 @@ typedef enum {
 // 1 = full blur.
 @property (nonatomic, assign) CGFloat centerViewBlurFactor;
 
+// Call when changing app-wide status bar (hiding/showing).
+- (void)updateStatusBarFrame;
+
 // Toggle side views open and close. Can pass in optional completion block.
 - (void)toggleLeftViewWithCompletion:(void (^)(void))completion;
 - (void)toggleRightViewWithCompletion:(void (^)(void))completion;

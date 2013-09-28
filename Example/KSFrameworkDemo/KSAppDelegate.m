@@ -50,6 +50,9 @@
         }
         
         _slideController = [KSSlideController slideControllerWithCenterViewController:self.navigationController leftViewController:leftMenuViewController rightViewController:rightMenuViewController];
+        
+        self.slideController.centerViewStatusBarColor = [UIColor clearColor];
+        self.slideController.sideViewStatusBarColor = [UIColor blackColor];
     }
     return _slideController;
 }
@@ -69,11 +72,9 @@
     self.window.rootViewController = self.slideController;
         
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
-    self.slideController.centerViewStatusBarColor = [UIColor clearColor];
-    self.slideController.sideViewStatusBarColor = [UIColor blackColor];
-    
+
     [self.window makeKeyAndVisible];
-    
+
     return YES;
 }
 

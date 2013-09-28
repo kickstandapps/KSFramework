@@ -114,11 +114,12 @@ typedef enum {
 @synthesize centerViewShadow;
 @synthesize leftViewShadow;
 @synthesize rightViewShadow;
+@synthesize statusBarMode = _statusBarMode;
 @synthesize statusBarBackgroundView = _statusBarBackgroundView;
 @synthesize centerViewStatusBarColor = _centerViewStatusBarColor;
 @synthesize sideViewStatusBarColor = _sideViewStatusBarColor;
 
-
+#pragma mark -
 #pragma mark - Initialization
 
 + (KSSlideController *)slideControllerWithCenterViewController:(id)centerViewController
@@ -267,11 +268,27 @@ typedef enum {
     return _statusBarBackgroundView;
 }
 
+- (void)setStatusBarMode:(KSSlideStatusBarMode)statusBarMode {
+    _statusBarMode = statusBarMode;
+    
+    if (viewHasLoaded) {
+        [self updateStatusBarFrame];
+    }
+}
+
 - (UIColor *)centerViewStatusBarColor {
     if (!_centerViewStatusBarColor) {
         _centerViewStatusBarColor = [UIColor clearColor];
     }
     return _centerViewStatusBarColor;
+}
+
+- (void)setCenterViewStatusBarColor:(UIColor *)centerViewStatusBarColor {
+    _centerViewStatusBarColor = centerViewStatusBarColor;
+    
+    if (viewHasLoaded) {
+        [self updateStatusBarFrame];
+    }
 }
 
 - (UIColor *)sideViewStatusBarColor {
@@ -281,12 +298,22 @@ typedef enum {
     return _sideViewStatusBarColor;
 }
 
+- (void)setSideViewStatusBarColor:(UIColor *)sideViewStatusBarColor {
+    _sideViewStatusBarColor = sideViewStatusBarColor;
+    
+    if (viewHasLoaded) {
+        [self updateStatusBarFrame];
+    }
+}
+
 
 #pragma mark -
 #pragma mark - View Lifecycle
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    [self updateStatusBarFrame];
     
     if (!self.viewHasLoaded) {
         [self.view addSubview:self.leftContainer];
@@ -317,6 +344,37 @@ typedef enum {
         
         self.viewHasAppeared = YES;
     }
+}
+
+- (void)updateStatusBarFrame {
+    CGRect statusRect = self.statusBarBackgroundView.frame;
+    if (self.iOSVersion >= 7 && ![UIApplication sharedApplication].statusBarHidden) {
+        statusRect.size.height = [UIApplication sharedApplication].statusBarFrame.size.height;
+    }
+    else {
+        statusRect.size.height = 0;
+    }
+    self.statusBarBackgroundView.frame = statusRect;
+    
+    CGFloat statusBarOffset = 0;
+    if (self.iOSVersion >= 7 && self.statusBarMode == KSSlideStatusBarModeOffset) {
+        statusBarOffset = self.statusBarBackgroundView.bounds.size.height;
+    }
+    
+    CGRect leftFrame = self.leftContainer.frame;
+    CGRect centerFrame = self.centerContainer.frame;
+    CGRect rightFrame = self.rightContainer.frame;
+    
+    leftFrame.origin.y = statusBarOffset;
+    centerFrame.origin.y = statusBarOffset;
+    rightFrame.origin.y = statusBarOffset;
+    leftFrame.size.height = self.view.bounds.size.height - statusBarOffset;
+    centerFrame.size.height = self.view.bounds.size.height - statusBarOffset;
+    rightFrame.size.height = self.view.bounds.size.height - statusBarOffset;
+    
+    self.leftContainer.frame = leftFrame;
+    self.centerContainer.frame = centerFrame;
+    self.rightContainer.frame = rightFrame;
 }
 
 
@@ -676,31 +734,12 @@ typedef enum {
 }
 
 - (void)setControllerOffset:(CGFloat)offset {
-    CGRect statusRect = self.statusBarBackgroundView.frame;
-    if (self.iOSVersion >= 7 && ![UIApplication sharedApplication].statusBarHidden) {
-        statusRect.size.height = [UIApplication sharedApplication].statusBarFrame.size.height;
-    }
-    else {
-        statusRect.size.height = 0;
-    }
-    self.statusBarBackgroundView.frame = statusRect;
-    
-    CGFloat statusBarOffset = 0;
-    if (self.iOSVersion >= 7 && self.statusBarMode == KSSlideStatusBarModeOffset) {
-        statusBarOffset = self.statusBarBackgroundView.bounds.size.height;
-    }
+    [self updateStatusBarFrame];
     
     CGRect leftFrame = self.leftContainer.frame;
     CGRect centerFrame = self.centerContainer.frame;
     CGRect rightFrame = self.rightContainer.frame;
-    
-    leftFrame.origin.y = statusBarOffset;
-    centerFrame.origin.y = statusBarOffset;
-    rightFrame.origin.y = statusBarOffset;
-    leftFrame.size.height = self.view.bounds.size.height - statusBarOffset;
-    centerFrame.size.height = self.view.bounds.size.height - statusBarOffset;
-    rightFrame.size.height = self.view.bounds.size.height - statusBarOffset;
-        
+
     leftFrame.origin.x = MIN(0, MAX(-self.leftViewWidth, offset - self.leftViewWidth)) * (self.sideViewsInFront ? 1 : self.slideParallaxFactor);
     centerFrame.origin.x = offset * (self.sideViewsInFront ? self.slideParallaxFactor : 1);
     rightFrame.origin.x = centerFrame.size.width - self.rightViewWidth * (1 - (self.sideViewsInFront ? 1 : self.slideParallaxFactor)) + offset * (self.sideViewsInFront ? 1 : self.slideParallaxFactor);
@@ -712,6 +751,9 @@ typedef enum {
     self.leftViewShadow.alpha = MAX(0, MIN(1, offset/20));
     self.rightViewShadow.alpha = MAX(0, MIN(1, -offset/20));
     
+    [self.leftViewShadow refresh];
+    [self.centerViewShadow refresh];
+    [self.rightViewShadow refresh];
     
     // handle inactive views
     if (offset != 0 && self.centerOverlay.hidden == YES && (self.slideTintOpacity || self.centerViewBlurFactor || (self.sideViewsInFront && self.slideScaleFactor != 1))) {
