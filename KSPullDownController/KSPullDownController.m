@@ -13,7 +13,6 @@
 @property (nonatomic, assign) CGFloat iOSVersion;
 
 @property (nonatomic, assign) BOOL viewHasLoaded;
-@property (nonatomic, assign) BOOL viewHasAppeared;
 
 @property (nonatomic, strong) UIView *statusBarBackgroundView;
 
@@ -22,11 +21,40 @@
 
 @end
 
+
+#pragma mark -
+#pragma mark - UIViewController + KSPullDownController
+
+@implementation UIViewController (KSPullDownController)
+
+@dynamic pullDownController;
+
+- (KSPullDownController *)pullDownController
+{
+    id containerView = self;
+    while (![containerView isKindOfClass:[KSPullDownController class]] && containerView) {
+        if ([containerView respondsToSelector:@selector(parentViewController)]) {
+            containerView = [containerView parentViewController];
+        }
+        
+        if ([containerView respondsToSelector:@selector(splitViewController)] && !containerView) {
+            containerView = [containerView splitViewController];
+        }
+    }
+    
+    return containerView;
+}
+
+@end
+
+
+#pragma mark -
+#pragma mark - KSPullDownController
+
 @implementation KSPullDownController
 
 @synthesize iOSVersion = _iOSVersion;
 @synthesize viewHasLoaded;
-@synthesize viewHasAppeared;
 @synthesize pullDownControllerState = _pullDownControllerState;
 @synthesize pullDownViewContainer = _pullDownViewContainer;
 @synthesize scrollView = _scrollView;
@@ -97,9 +125,15 @@
     if (!_statusBarBackgroundView) {
         CGFloat barHeight = 0;
         if (self.iOSVersion >= 7 && ![UIApplication sharedApplication].statusBarHidden) {
-            barHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+            if (UIInterfaceOrientationIsPortrait([UIApplication sharedApplication].statusBarOrientation)) {
+                barHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+            }
+            else {
+                barHeight = [UIApplication sharedApplication].statusBarFrame.size.width;
+            }
         }
         _statusBarBackgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width,barHeight)];
+        _statusBarBackgroundView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         _statusBarBackgroundView.backgroundColor = self.statusBarColor;
     }
     return _statusBarBackgroundView;
@@ -143,7 +177,12 @@
 - (void)updateStatusBarFrame {
     CGFloat barHeight = 0;
     if (self.iOSVersion >= 7 && ![UIApplication sharedApplication].statusBarHidden) {
-        barHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+        if (UIInterfaceOrientationIsPortrait([UIApplication sharedApplication].statusBarOrientation)) {
+            barHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+        }
+        else {
+            barHeight = [UIApplication sharedApplication].statusBarFrame.size.width;
+        }
     }
     self.statusBarBackgroundView.frame = CGRectMake(0, 0, self.view.bounds.size.width,barHeight);
     
@@ -175,7 +214,7 @@
         [self.pullDownViewContainer addSubview:_pullDownViewController.view];
     }
     
-    self.pullDownViewContainer.frame = CGRectMake(0, self.pullDownViewHeight, self.scrollView.bounds.size.width, self.pullDownViewHeight);
+    self.pullDownViewContainer.frame = CGRectMake(0, -self.pullDownViewHeight, self.scrollView.bounds.size.width, self.pullDownViewHeight);
 
     
     [_pullDownViewController didMoveToParentViewController:self];
@@ -190,7 +229,60 @@
 
 
 #pragma mark -
-#pragma mark - Pull Down View Options
+#pragma mark - Pull Down View Methods
+
+- (void)setPullDownControllerState:(KSPullDownControllerState)pullDownControllerState withAnimatedDuration:(CGFloat)duration {
+    if (pullDownControllerState == KSPullDownControllerStateOpen) {
+        self.scrollView.showsVerticalScrollIndicator = NO;
+        
+        [UIView animateWithDuration:duration animations:^{
+            self.scrollView.contentInset = UIEdgeInsetsMake(self.pullDownViewHeight, self.scrollView.contentInset.left, self.scrollView.contentInset.bottom, self.scrollView.contentInset.right);
+            self.scrollView.contentOffset = CGPointMake(0,-self.pullDownViewHeight);
+        } completion:^(BOOL finish) {
+            if ([self.delegate respondsToSelector:@selector(pullDownViewControllerOpenRatio:)]) {
+                [self.delegate pullDownViewControllerOpenRatio:1];
+            }
+            if (self.pullDownControllerState == KSPullDownControllerStateClosed) {
+                self.pullDownControllerState = KSPullDownControllerStateOpen;
+                if (self.openPullDownViewCompletion) {
+                    self.openPullDownViewCompletion ();
+                }
+            }
+        }];
+    }
+    else if (pullDownControllerState == KSPullDownControllerStateClosed) {
+        if (self.scrollView.contentOffset.y < 0) {
+            self.scrollView.showsVerticalScrollIndicator = NO;
+            
+            [UIView animateWithDuration:duration animations:^{
+                self.scrollView.contentInset = UIEdgeInsetsMake(0, self.scrollView.contentInset.left, self.scrollView.contentInset.bottom, self.scrollView.contentInset.right);
+            } completion:^(BOOL finish){
+                self.scrollView.showsVerticalScrollIndicator = self.showScrollIndicator;
+                if ([self.delegate respondsToSelector:@selector(pullDownViewControllerOpenRatio:)]) {
+                    [self.delegate pullDownViewControllerOpenRatio:0];
+                }
+                if (self.pullDownControllerState == KSPullDownControllerStateOpen) {
+                    self.pullDownControllerState = KSPullDownControllerStateClosed;
+                    if (self.closePullDownViewCompletion) {
+                        self.closePullDownViewCompletion ();
+                    }
+                }
+            }];
+        }
+        else {
+            self.scrollView.contentInset = UIEdgeInsetsMake(0, self.scrollView.contentInset.left, self.scrollView.contentInset.bottom, self.scrollView.contentInset.right);            self.scrollView.showsVerticalScrollIndicator = self.showScrollIndicator;
+            if (self.pullDownControllerState == KSPullDownControllerStateOpen) {
+                self.pullDownControllerState = KSPullDownControllerStateClosed;
+                if ([self.delegate respondsToSelector:@selector(pullDownViewControllerOpenRatio:)]) {
+                    [self.delegate pullDownViewControllerOpenRatio:0];
+                }
+                if (self.closePullDownViewCompletion) {
+                    self.closePullDownViewCompletion ();
+                }
+            }
+        }
+    }
+}
 
 - (void)setPullDownViewHeight:(CGFloat)pullDownViewHeight {
     _pullDownViewHeight = pullDownViewHeight;
@@ -216,55 +308,15 @@
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
     if (scrollView == self.scrollView && ((scrollView.contentOffset.y <= -self.pullDownBreakPoint && velocity.y <= 0) || (scrollView.contentOffset.y < 0 && velocity.y < -1.0))) {
-        scrollView.showsVerticalScrollIndicator = NO;
-        
-        [UIView animateWithDuration:MAX(0, 0.3 + (velocity.y / 10)) animations:^{
-            scrollView.contentInset = UIEdgeInsetsMake(self.pullDownViewHeight, 0, 0, 0);
-            scrollView.contentOffset = CGPointMake(0,-self.pullDownViewHeight);
-            *targetContentOffset = CGPointMake(0,-self.pullDownViewHeight);
-        } completion:^(BOOL finish) {
-            if ([self.delegate respondsToSelector:@selector(pullDownViewControllerOpenRatio:)]) {
-                [self.delegate pullDownViewControllerOpenRatio:1];
-            }
-            if (self.pullDownControllerState == KSPullDownControllerStateClosed) {
-                self.pullDownControllerState = KSPullDownControllerStateOpen;
-                if (self.openPullDownViewCompletion) {
-                    self.openPullDownViewCompletion ();
-                }
-            }
-        }];
+        *targetContentOffset = CGPointMake(0,-self.pullDownViewHeight);
+        [self setPullDownControllerState:KSPullDownControllerStateOpen withAnimatedDuration:MAX(0, 0.3 + (velocity.y / 10))];
     }
     else if (scrollView == self.scrollView && scrollView.contentOffset.y < 0) {
-        scrollView.showsVerticalScrollIndicator = NO;
-        
-        [UIView animateWithDuration:MAX(0, 0.3 - (velocity.y / 10)) animations:^{
-            scrollView.contentInset = UIEdgeInsetsZero;
-            *targetContentOffset = CGPointZero;
-        } completion:^(BOOL finish){
-            scrollView.showsVerticalScrollIndicator = self.showScrollIndicator;
-            if ([self.delegate respondsToSelector:@selector(pullDownViewControllerOpenRatio:)]) {
-                [self.delegate pullDownViewControllerOpenRatio:0];
-            }
-            if (self.pullDownControllerState == KSPullDownControllerStateOpen) {
-                self.pullDownControllerState = KSPullDownControllerStateClosed;
-                if (self.closePullDownViewCompletion) {
-                    self.closePullDownViewCompletion ();
-                }
-            }
-        }];
+        *targetContentOffset = CGPointZero;
+        [self setPullDownControllerState:KSPullDownControllerStateClosed withAnimatedDuration:MAX(0, 0.3 - (velocity.y / 10))];
     }
     else if (scrollView == self.scrollView) {
-        scrollView.contentInset = UIEdgeInsetsZero;
-        scrollView.showsVerticalScrollIndicator = self.showScrollIndicator;
-        if (self.pullDownControllerState == KSPullDownControllerStateOpen) {
-            self.pullDownControllerState = KSPullDownControllerStateClosed;
-            if ([self.delegate respondsToSelector:@selector(pullDownViewControllerOpenRatio:)]) {
-                [self.delegate pullDownViewControllerOpenRatio:0];
-            }
-            if (self.closePullDownViewCompletion) {
-                self.closePullDownViewCompletion ();
-            }
-        }
+        [self setPullDownControllerState:KSPullDownControllerStateClosed withAnimatedDuration:0];
     }
 }
 

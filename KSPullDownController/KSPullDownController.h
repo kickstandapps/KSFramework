@@ -62,7 +62,11 @@ typedef enum {
 @property (nonatomic, assign) KSPullDownStatusBarMode statusBarMode;
 @property (nonatomic, strong) UIColor *statusBarColor;
 
+// Call when changing app-wide status bar (hiding/showing).
 - (void)updateStatusBarFrame;
+
+// Call to set the pull down controller state.
+- (void)setPullDownControllerState:(KSPullDownControllerState)pullDownControllerState withAnimatedDuration:(CGFloat)duration;
 
 @end
 

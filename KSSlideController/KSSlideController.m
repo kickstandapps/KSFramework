@@ -54,8 +54,8 @@ typedef enum {
 @end
 
 
-#pragma mark - UIViewController + KSSlideController
 #pragma mark -
+#pragma mark - UIViewController + KSSlideController
 
 @implementation UIViewController (KSSlideController)
 
@@ -80,8 +80,8 @@ typedef enum {
 @end
 
 
-#pragma mark - KSSlideController
 #pragma mark -
+#pragma mark - KSSlideController
 
 @implementation KSSlideController
 
@@ -260,9 +260,15 @@ typedef enum {
     if (!_statusBarBackgroundView) {
         CGFloat barHeight = 0;
         if (self.iOSVersion >= 7 && ![UIApplication sharedApplication].statusBarHidden) {
-            barHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+            if (UIInterfaceOrientationIsPortrait([UIApplication sharedApplication].statusBarOrientation)) {
+                barHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
+            }
+            else {
+                barHeight = [UIApplication sharedApplication].statusBarFrame.size.width;
+            }
         }
         _statusBarBackgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width,barHeight)];
+        _statusBarBackgroundView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         _statusBarBackgroundView.backgroundColor = self.centerViewStatusBarColor;
     }
     return _statusBarBackgroundView;
@@ -332,9 +338,6 @@ typedef enum {
         [self setLeftViewFrameToClosedPosition];
         [self setRightViewFrameToClosedPosition];
         [self addGestureRecognizers];
-        [self.centerViewShadow refresh];
-        [self.leftViewShadow refresh];
-        [self.rightViewShadow refresh];
         
         self.leftOverlay.image = self.leftViewController.view.screenshot;
         self.rightOverlay.image = self.rightViewController.view.screenshot;
@@ -344,12 +347,21 @@ typedef enum {
         
         self.viewHasAppeared = YES;
     }
+    [self.centerViewShadow refresh];
+    [self.leftViewShadow refresh];
+    [self.rightViewShadow refresh];
 }
 
 - (void)updateStatusBarFrame {
     CGRect statusRect = self.statusBarBackgroundView.frame;
+
     if (self.iOSVersion >= 7 && ![UIApplication sharedApplication].statusBarHidden) {
-        statusRect.size.height = [UIApplication sharedApplication].statusBarFrame.size.height;
+        if (UIInterfaceOrientationIsPortrait([UIApplication sharedApplication].statusBarOrientation)) {
+            statusRect.size.height = [UIApplication sharedApplication].statusBarFrame.size.height;
+        }
+        else {
+            statusRect.size.height = [UIApplication sharedApplication].statusBarFrame.size.width;
+        }
     }
     else {
         statusRect.size.height = 0;

@@ -10,31 +10,43 @@
 #import "DemoSlideViewController.h"
 #import "SideMenuViewController.h"
 #import "KSSlideController.h"
+#import "DemoPullDownViewController.h"
 
 @interface KSAppDelegate ()
 
-@property (nonatomic, strong) DemoSlideViewController *demoController;
+@property (nonatomic, strong) UITabBarController *tabController;
+@property (nonatomic, strong) DemoSlideViewController *demoSlideController;
 @property (nonatomic, strong) UINavigationController *navigationController;
 @property (nonatomic, strong) KSSlideController *slideController;
+@property (nonatomic, strong) DemoPullDownViewController *demoPullDownController;
 
 @end
 
 @implementation KSAppDelegate
 
-@synthesize demoController = _demoController;
+@synthesize tabController = _tabController;
+@synthesize demoSlideController = _demoSlideController;
 @synthesize navigationController = _navigationController;
 @synthesize slideController = _slideController;
+@synthesize demoPullDownController = _demoPullDownController;
 
-- (DemoSlideViewController *)demoController {
-    if (!_demoController)
-    {
-        _demoController = [[DemoSlideViewController alloc] initWithNibName:@"DemoSlideViewController" bundle:nil];
-        
-        _demoController.title = @"KSFramework Demo";
-        _demoController.navigationItem.rightBarButtonItem = [self rightMenuBarButtonItem];
-        _demoController.navigationItem.leftBarButtonItem = [self leftMenuBarButtonItem];
+- (UITabBarController *)tabController {
+    if (!_tabController) {
+        _tabController = [[UITabBarController alloc] init];
     }
-    return _demoController;
+    return _tabController;
+}
+
+- (DemoSlideViewController *)demoSlideController {
+    if (!_demoSlideController)
+    {
+        _demoSlideController = [[DemoSlideViewController alloc] initWithNibName:@"DemoSlideViewController" bundle:nil];
+        
+        _demoSlideController.title = @"KSFramework Demo";
+        _demoSlideController.navigationItem.rightBarButtonItem = [self rightMenuBarButtonItem];
+        _demoSlideController.navigationItem.leftBarButtonItem = [self leftMenuBarButtonItem];
+    }
+    return _demoSlideController;
 }
 
 - (KSSlideController *)slideController {
@@ -44,15 +56,17 @@
         SideMenuViewController *rightMenuViewController = [[SideMenuViewController alloc] init];
 
         if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7) {
-            [leftMenuViewController.tableView setContentInset:UIEdgeInsetsMake(20, leftMenuViewController.tableView.contentInset.left, leftMenuViewController.tableView.contentInset.bottom, leftMenuViewController.tableView.contentInset.right)];
+            [leftMenuViewController.tableView setContentInset:UIEdgeInsetsMake([UIApplication sharedApplication].statusBarFrame.size.height, leftMenuViewController.tableView.contentInset.left, self.tabController.tabBar.frame.size.height, leftMenuViewController.tableView.contentInset.right)];
         
-            [rightMenuViewController.tableView setContentInset:UIEdgeInsetsMake(20, rightMenuViewController.tableView.contentInset.left, rightMenuViewController.tableView.contentInset.bottom, rightMenuViewController.tableView.contentInset.right)];
+            [rightMenuViewController.tableView setContentInset:UIEdgeInsetsMake([UIApplication sharedApplication].statusBarFrame.size.height, rightMenuViewController.tableView.contentInset.left, self.tabController.tabBar.frame.size.height, rightMenuViewController.tableView.contentInset.right)];
         }
         
         _slideController = [KSSlideController slideControllerWithCenterViewController:self.navigationController leftViewController:leftMenuViewController rightViewController:rightMenuViewController];
         
-        self.slideController.centerViewStatusBarColor = [UIColor clearColor];
-        self.slideController.sideViewStatusBarColor = [UIColor blackColor];
+        _slideController.centerViewStatusBarColor = [UIColor clearColor];
+        _slideController.sideViewStatusBarColor = [UIColor blackColor];
+        
+        _slideController.title = @"KSSlideController";
     }
     return _slideController;
 }
@@ -60,17 +74,32 @@
 - (UINavigationController *)navigationController {
     if (!_navigationController)
     {
-        _navigationController = [[UINavigationController alloc] initWithRootViewController:[self demoController]];
+        _navigationController = [[UINavigationController alloc] initWithRootViewController:[self demoSlideController]];
     }
     return _navigationController;
+}
+
+- (DemoPullDownViewController *)demoPullDownController {
+    if (!_demoPullDownController) {
+        _demoPullDownController = [[DemoPullDownViewController alloc] init];
+        
+        if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 7) {
+            [_demoPullDownController.scrollView setContentInset:UIEdgeInsetsMake(_demoPullDownController.scrollView.contentInset.top, _demoPullDownController.scrollView.contentInset.left, self.tabController.tabBar.frame.size.height, _demoPullDownController.scrollView.contentInset.right)];
+        }
+                
+        _demoPullDownController.title = @"KSPullDownController";
+    }
+    return _demoPullDownController;
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
-    self.window.rootViewController = self.slideController;
-        
+    self.tabController.viewControllers = [NSArray arrayWithObjects:self.slideController,self.demoPullDownController, nil];
+    
+    self.window.rootViewController = self.tabController;
+    
     [UIApplication sharedApplication].statusBarStyle = UIStatusBarStyleLightContent;
 
     [self.window makeKeyAndVisible];
