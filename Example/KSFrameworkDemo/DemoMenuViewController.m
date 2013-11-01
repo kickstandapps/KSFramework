@@ -72,7 +72,7 @@
         _redButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin;
         [_redButton setTitle:@"Red" forState:UIControlStateNormal];
         _redButton.titleLabel.textColor = [UIColor whiteColor];
-        _redButton.backgroundColor = [UIColor redColor];
+        _redButton.backgroundColor = [UIColor colorWithHue:0/360.0 saturation:0.89 brightness:1.0 alpha:1.0];
         _redButton.titleLabel.font = [UIFont fontWithName:@"Avenir" size:17];
         [_redButton addTarget:self action:@selector(chooseRedColor) forControlEvents:UIControlEventTouchUpInside];
     }
@@ -85,7 +85,7 @@
         _greenButton.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleWidth;
         [_greenButton setTitle:@"Green" forState:UIControlStateNormal];
         _greenButton.titleLabel.textColor = [UIColor whiteColor];
-        _greenButton.backgroundColor = [UIColor colorWithRed:0.0 green:0.8 blue:0.2 alpha:1.0];
+        _greenButton.backgroundColor = [UIColor colorWithHue:128/360.0 saturation:0.89 brightness:1.0 alpha:1.0];
         _greenButton.titleLabel.font = [UIFont fontWithName:@"Avenir" size:17];
         [_greenButton addTarget:self action:@selector(chooseGreenColor) forControlEvents:UIControlEventTouchUpInside];
     }
@@ -98,7 +98,7 @@
         _blueButton.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleLeftMargin;
         [_blueButton setTitle:@"Blue" forState:UIControlStateNormal];
         _blueButton.titleLabel.textColor = [UIColor whiteColor];
-        _blueButton.backgroundColor = [UIColor blueColor];
+        _blueButton.backgroundColor = [UIColor colorWithHue:210/360.0 saturation:0.89 brightness:1.0 alpha:1.0];
         _blueButton.titleLabel.font = [UIFont fontWithName:@"Avenir" size:17];
         [_blueButton addTarget:self action:@selector(chooseBlueColor) forControlEvents:UIControlEventTouchUpInside];
     }
@@ -141,17 +141,17 @@
 }
 
 - (void)chooseRedColor {
-    self.pullDownController.scrollView.backgroundColor = [UIColor redColor];
+    self.pullDownController.scrollView.backgroundColor = [UIColor colorWithHue:0/360.0 saturation:0.89 brightness:1.0 alpha:1.0];
     [self.pullDownController setPullDownControllerState:KSPullDownControllerStateClosed withAnimatedDuration:0.3];
 }
 
 - (void)chooseGreenColor {
-    self.pullDownController.scrollView.backgroundColor = [UIColor colorWithRed:0.0 green:0.8 blue:0.2 alpha:1.0];
+    self.pullDownController.scrollView.backgroundColor = [UIColor colorWithHue:128/360.0 saturation:0.89 brightness:0.9 alpha:1.0];
     [self.pullDownController setPullDownControllerState:KSPullDownControllerStateClosed withAnimatedDuration:0.3];
 }
 
 - (void)chooseBlueColor {
-    self.pullDownController.scrollView.backgroundColor = [UIColor blueColor];
+    self.pullDownController.scrollView.backgroundColor = [UIColor colorWithHue:210/360.0 saturation:0.89 brightness:1.0 alpha:1.0];
     [self.pullDownController setPullDownControllerState:KSPullDownControllerStateClosed withAnimatedDuration:0.3];
 }
 

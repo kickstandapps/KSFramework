@@ -39,7 +39,7 @@
     
     self.statusBarColor = [UIColor colorWithWhite:0.0 alpha:0.3];
 	   
-    self.scrollView.backgroundColor = [UIColor blueColor];
+    self.scrollView.backgroundColor = [UIColor colorWithHue:210/360.0 saturation:0.89 brightness:1.0 alpha:1.0];
     
     self.scrollView.contentSize = CGSizeMake(self.scrollView.bounds.size.width, 20 * 50 + 20);
     

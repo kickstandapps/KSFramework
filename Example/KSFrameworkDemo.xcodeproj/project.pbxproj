@@ -16,6 +16,10 @@
 		1F381DC417E4448B00427799 /* SideMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F381DC117E4435C00427799 /* SideMenuViewController.m */; };
 		1F381DD617E60ADA00427799 /* DemoSlideViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1F381DD417E60AD900427799 /* DemoSlideViewController.m */; };
 		1F381DD717E60ADA00427799 /* DemoSlideViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1F381DD517E60AD900427799 /* DemoSlideViewController.xib */; };
+		1F72BE7018234D750038E900 /* SlideIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 1F72BE6C18234D750038E900 /* SlideIcon.png */; };
+		1F72BE7118234D750038E900 /* SlideIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1F72BE6D18234D750038E900 /* SlideIcon@2x.png */; };
+		1F72BE7218234D750038E900 /* PullIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 1F72BE6E18234D750038E900 /* PullIcon@2x.png */; };
+		1F72BE7318234D750038E900 /* PullIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 1F72BE6F18234D750038E900 /* PullIcon.png */; };
 		1F96830117E4046A00C5EAB9 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F96830017E4046A00C5EAB9 /* UIKit.framework */; };
 		1F96830317E4046A00C5EAB9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F96830217E4046A00C5EAB9 /* Foundation.framework */; };
 		1F96830517E4046A00C5EAB9 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1F96830417E4046A00C5EAB9 /* CoreGraphics.framework */; };
@@ -48,6 +52,10 @@
 		1F381DD317E60AD900427799 /* DemoSlideViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DemoSlideViewController.h; sourceTree = "<group>"; };
 		1F381DD417E60AD900427799 /* DemoSlideViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoSlideViewController.m; sourceTree = "<group>"; };
 		1F381DD517E60AD900427799 /* DemoSlideViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DemoSlideViewController.xib; sourceTree = "<group>"; };
+		1F72BE6C18234D750038E900 /* SlideIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SlideIcon.png; sourceTree = "<group>"; };
+		1F72BE6D18234D750038E900 /* SlideIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "SlideIcon@2x.png"; sourceTree = "<group>"; };
+		1F72BE6E18234D750038E900 /* PullIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "PullIcon@2x.png"; sourceTree = "<group>"; };
+		1F72BE6F18234D750038E900 /* PullIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PullIcon.png; sourceTree = "<group>"; };
 		1F9682FD17E4046A00C5EAB9 /* KSFrameworkDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KSFrameworkDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F96830017E4046A00C5EAB9 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		1F96830217E4046A00C5EAB9 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -200,6 +208,10 @@
 		1FC0DAFC17E813DA00580E20 /* Image Files */ = {
 			isa = PBXGroup;
 			children = (
+				1F72BE6C18234D750038E900 /* SlideIcon.png */,
+				1F72BE6D18234D750038E900 /* SlideIcon@2x.png */,
+				1F72BE6E18234D750038E900 /* PullIcon@2x.png */,
+				1F72BE6F18234D750038E900 /* PullIcon.png */,
 				1FC0DAFD17E813DA00580E20 /* back-arrow.png */,
 				1FC0DAFE17E813DA00580E20 /* back-arrow@2x.png */,
 				1FC0DAFF17E813DA00580E20 /* Default-568h@2x.png */,
@@ -268,6 +280,10 @@
 			files = (
 				1F96830B17E4046A00C5EAB9 /* InfoPlist.strings in Resources */,
 				1F381DD717E60ADA00427799 /* DemoSlideViewController.xib in Resources */,
+				1F72BE7018234D750038E900 /* SlideIcon.png in Resources */,
+				1F72BE7118234D750038E900 /* SlideIcon@2x.png in Resources */,
+				1F72BE7218234D750038E900 /* PullIcon@2x.png in Resources */,
+				1F72BE7318234D750038E900 /* PullIcon.png in Resources */,
 				1FC0DB0217E813DA00580E20 /* back-arrow.png in Resources */,
 				1FC0DB0317E813DA00580E20 /* back-arrow@2x.png in Resources */,
 				1FC0DB0417E813DA00580E20 /* Default-568h@2x.png in Resources */,

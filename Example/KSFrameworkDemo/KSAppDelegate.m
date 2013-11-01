@@ -67,6 +67,7 @@
         _slideController.sideViewStatusBarColor = [UIColor blackColor];
         
         _slideController.title = @"KSSlideController";
+        _slideController.tabBarItem.image = [UIImage imageNamed:@"SlideIcon.png"];
     }
     return _slideController;
 }
@@ -88,6 +89,7 @@
         }
                 
         _demoPullDownController.title = @"KSPullDownController";
+        _demoPullDownController.tabBarItem.image = [UIImage imageNamed:@"PullIcon.png"];
     }
     return _demoPullDownController;
 }
