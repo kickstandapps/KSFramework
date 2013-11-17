@@ -1166,8 +1166,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     }
     
     if (translatedPoint.x == 0) {
-        self.leftContainer.hidden = YES;
-        self.rightContainer.hidden = YES;
         self.panDirection = KSSlideControllerPanDirectionNone;
     }
 }
@@ -1234,8 +1232,6 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
     }
     
     if (translatedPoint.x == 0) {
-        self.leftContainer.hidden = YES;
-        self.rightContainer.hidden = YES;
         self.panDirection = KSSlideControllerPanDirectionNone;
     }
 }

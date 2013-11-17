@@ -21,7 +21,7 @@ Some code for this control was forked from the [MFSideMenu](https://github.com/m
 
 ####CocoaPods
 Add the following to your Podfile.
-`pod 'KSFramework/KSSlideController', '~> 1.0'`
+`pod 'KSFramework/KSSlideController', '~> 1.0’`
 
 ####Manually
 Add the `KSSlideController` folder to your project. Add required `KSFramework` folders to your project. Add required Apple frameworks to your project. 
@@ -105,6 +105,28 @@ You can listen for controller state event changes (i.e. side view will open, sid
     KSSlideController *slideController = notification.object;
     // ...
 }
+```
+
+####Status Bar Properties
+
+The following properties can be used to control the status bar behavior in iOS 7. These properties will not do anything in any version of iOS prior to iOS 7.
+
+```objective-c
+// All views will extend behind the status bar to the top of the screen (this is the default behavior):
+slideController.statusBarMode = KSSlideStatusBarModeOverlay;
+
+// All views start below the status bar:
+slideController.statusBarMode = KSSlideStatusBarModeOffset;
+```
+
+Colors can also be set for both center and side locations
+
+```objective-c
+// Set the color of the status bar when the center view controller is visible.
+@property (nonatomic, strong) UIColor *centerViewStatusBarColor;
+
+// Set the color of the status bar when either side view controller is visible.
+@property (nonatomic, strong) UIColor *sideViewStatusBarColor;
 ```
 
 ####Menu Width
