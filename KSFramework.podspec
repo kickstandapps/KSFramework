@@ -44,6 +44,7 @@ This controller adds a configurable shadow to any view that is passed to it.'
   }
 
   s.requires_arc = true
+  s.compiler_flags = '-ObjC'
 
   s.subspec 'KSImageAdditions' do |ia|
     ia.source_files = 'KSImageAdditions/*.{h,m}'
