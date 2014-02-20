@@ -1,7 +1,7 @@
 Pod::Spec.new do |s|
 
   s.name         = 'KSFramework'
-  s.version      = '1.0'
+  s.version      = '1.1'
   s.summary      = 'An iOS framework containing helpful classes and categories.'
   s.description  = 'An iOS framework where each component can be used without including the entire KSFramework.
 
