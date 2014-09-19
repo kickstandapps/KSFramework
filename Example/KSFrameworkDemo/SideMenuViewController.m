@@ -23,7 +23,7 @@
 #pragma mark - UITableViewDataSource
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-    return [NSString stringWithFormat:@"Section %d", section];
+    return [NSString stringWithFormat:@"Section %ld", (long)section];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -44,7 +44,7 @@
         cell.textLabel.font = [UIFont fontWithName:@"AvenirNext" size:21];
     }
     
-    cell.textLabel.text = [NSString stringWithFormat:@"Item %d", indexPath.row];
+    cell.textLabel.text = [NSString stringWithFormat:@"Item %ld", (long)indexPath.row];
     
     return cell;
 }
@@ -55,7 +55,7 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {    
     UINavigationController *navigationController = self.slideController.centerViewController;
 
-    ((UIViewController *)navigationController.viewControllers.lastObject).title = [NSString stringWithFormat:@"Demo #%d-%d", indexPath.section, indexPath.row];
+    ((UIViewController *)navigationController.viewControllers.lastObject).title = [NSString stringWithFormat:@"Demo #%ld-%ld", (long)indexPath.section, (long)indexPath.row];
 
     [self.slideController setSlideControllerState:KSSlideControllerStateClosed];
 }

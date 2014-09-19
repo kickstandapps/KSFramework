@@ -307,12 +307,7 @@
 }
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
-    if (scrollView == self.scrollView && scrollView.contentOffset.y < 0 && velocity.y < -1.0)
-    {
-        *targetContentOffset = CGPointMake(0,-1000);
-        [self setPullDownControllerState:KSPullDownControllerStateOpen withAnimatedDuration:MAX(0, 0.3 + (velocity.y / 10))];
-    }
-    else if (scrollView == self.scrollView && scrollView.contentOffset.y <= -self.pullDownBreakPoint && velocity.y <= 0)
+    if (scrollView == self.scrollView && ((scrollView.contentOffset.y < 0 && velocity.y < -1.0) || (scrollView.contentOffset.y <= -self.pullDownBreakPoint && velocity.y <= 0)))
     {
         *targetContentOffset = CGPointMake(0,-self.pullDownViewHeight);
         [self setPullDownControllerState:KSPullDownControllerStateOpen withAnimatedDuration:MAX(0, 0.3 + (velocity.y / 10))];

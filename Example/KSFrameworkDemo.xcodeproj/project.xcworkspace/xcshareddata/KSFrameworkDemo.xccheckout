@@ -10,29 +10,29 @@
 	<string>KSFrameworkDemo</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>AD7F16C1-D4E4-40B9-9533-2BF622D16018</key>
+		<key>687133388623EFF6C279B13BA1D713B659495756</key>
 		<string>https://github.com/kickstandapps/KSFramework.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>Example/KSFrameworkDemo.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>AD7F16C1-D4E4-40B9-9533-2BF622D16018</key>
+		<key>687133388623EFF6C279B13BA1D713B659495756</key>
 		<string>../../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/kickstandapps/KSFramework.git</string>
 	<key>IDESourceControlProjectVersion</key>
-	<integer>110</integer>
+	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>AD7F16C1-D4E4-40B9-9533-2BF622D16018</string>
+	<string>687133388623EFF6C279B13BA1D713B659495756</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>AD7F16C1-D4E4-40B9-9533-2BF622D16018</string>
+			<string>687133388623EFF6C279B13BA1D713B659495756</string>
 			<key>IDESourceControlWCCName</key>
 			<string>KSFramework</string>
 		</dict>
