@@ -13,6 +13,7 @@
 @property (nonatomic, assign) CGFloat iOSVersion;
 
 @property (nonatomic, assign) BOOL viewHasLoaded;
+@property (nonatomic, assign) BOOL isDeceleratingContent;
 
 @property (nonatomic, strong) UIView *statusBarBackgroundView;
 
@@ -306,10 +307,18 @@
     }
 }
 
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    self.isDeceleratingContent = NO;
+}
+
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
     if (scrollView == self.scrollView && ((scrollView.contentOffset.y < 0 && velocity.y < -1.0) || (scrollView.contentOffset.y <= -self.pullDownBreakPoint && velocity.y <= 0)))
     {
-        *targetContentOffset = CGPointMake(0,-self.pullDownViewHeight);
+        if (self.isDeceleratingContent) {
+            *targetContentOffset = CGPointMake(0, scrollView.contentOffset.y);
+        } else {
+            *targetContentOffset = CGPointMake(0,-self.pullDownViewHeight);
+        }
         [self setPullDownControllerState:KSPullDownControllerStateOpen withAnimatedDuration:MAX(0, 0.3 + (velocity.y / 10))];
     }
     else if (scrollView == self.scrollView && scrollView.contentOffset.y < 0) {
@@ -317,7 +326,11 @@
         [self setPullDownControllerState:KSPullDownControllerStateClosed withAnimatedDuration:MAX(0, 0.3 - (velocity.y / 10))];
     }
     else if (scrollView == self.scrollView) {
+        if (velocity.y != 0.0) {
+            self.isDeceleratingContent = YES;
+        }
         [self setPullDownControllerState:KSPullDownControllerStateClosed withAnimatedDuration:0];
+        
     }
 }
 
