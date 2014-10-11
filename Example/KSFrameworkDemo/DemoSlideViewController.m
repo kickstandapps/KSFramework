@@ -35,6 +35,21 @@
     }
 }
 
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    if ([[UIDevice currentDevice] orientation] == UIInterfaceOrientationLandscapeLeft) {
+        self.slideController.pinnedLeftView = YES;
+    } else {
+        self.slideController.pinnedLeftView = NO;
+    }
+    
+    if ([[UIDevice currentDevice] orientation] == UIInterfaceOrientationLandscapeRight) {
+        self.slideController.pinnedRightView = YES;
+    } else {
+        self.slideController.pinnedRightView = NO;
+    }
+}
+
 - (void)setTitle:(NSString *)title
 {
     [super setTitle:title];

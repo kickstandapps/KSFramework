@@ -104,6 +104,8 @@ typedef enum {
 @synthesize panDirection;
 @synthesize leftViewWidth = _leftViewWidth;
 @synthesize rightViewWidth = _rightViewWidth;
+@synthesize pinnedLeftView = _pinnedLeftView;
+@synthesize pinnedRightView = _pinnedRightView;
 @synthesize sideViewsInFront = _sideViewsInFront;
 @synthesize slideParallaxFactor = _slideParallaxFactor;
 @synthesize slideScaleFactor = _slideScaleFactor;
@@ -256,6 +258,50 @@ typedef enum {
     return _rightContainer;
 }
 
+- (void)setPinnedLeftView:(BOOL)pinnedLeftView {
+    if (_pinnedLeftView == pinnedLeftView) {
+        return;
+    }
+    
+    _pinnedLeftView = pinnedLeftView;
+
+    if (pinnedLeftView) {
+        self.leftContainer.hidden = NO;
+        self.leftViewController.view.hidden = NO;
+        self.leftOverlay.hidden = YES;
+        
+        self.leftOverlay.blurSize = self.centerViewBlurFactor;
+
+        [self setSlideControllerState:KSSlideControllerStateClosed];
+    } else {
+        self.leftOverlay.blurSize = self.sideViewBlurFactor;
+        
+        [self setSlideControllerState:KSSlideControllerStateClosed];
+    }
+}
+
+- (void)setPinnedRightView:(BOOL)pinnedRightView {
+    if (_pinnedRightView == pinnedRightView) {
+        return;
+    }
+    
+    _pinnedRightView = pinnedRightView;
+    
+    if (pinnedRightView) {
+        self.rightContainer.hidden = NO;
+        self.rightViewController.view.hidden = NO;
+        self.rightOverlay.hidden = YES;
+        
+        self.rightOverlay.blurSize = self.centerViewBlurFactor;
+
+        [self setSlideControllerState:KSSlideControllerStateClosed];
+    } else {
+        self.rightOverlay.blurSize = self.sideViewBlurFactor;
+
+        [self setSlideControllerState:KSSlideControllerStateClosed];
+    }
+}
+
 - (UIView *)statusBarBackgroundView {
     if (!_statusBarBackgroundView) {
         CGFloat barHeight = 0;
@@ -350,6 +396,10 @@ typedef enum {
     [self.centerViewShadow refresh];
     [self.leftViewShadow refresh];
     [self.rightViewShadow refresh];
+}
+
+- (void)viewDidLayoutSubviews {
+    [self updateStatusBarFrame];
 }
 
 - (void)updateStatusBarFrame {
@@ -532,6 +582,8 @@ typedef enum {
 
 - (void)addGestureRecognizers {
     [self.centerContainer addGestureRecognizer:[self centerTapGestureRecognizer]];
+    [self.leftContainer addGestureRecognizer:[self centerTapGestureRecognizer]];
+    [self.rightContainer addGestureRecognizer:[self centerTapGestureRecognizer]];
     [self.centerContainer addGestureRecognizer:[self panGestureRecognizer]];
     [self.leftContainer addGestureRecognizer:[self panGestureRecognizer]];
     [self.rightContainer addGestureRecognizer:[self panGestureRecognizer]];
@@ -594,6 +646,13 @@ typedef enum {
 }
 
 - (void)setSlideControllerState:(KSSlideControllerState)state completion:(void (^)(void))completion {
+    if (self.pinnedLeftView && state == KSSlideControllerStateLeftViewOpen) {
+        state = KSSlideControllerStateClosed;
+    }
+    if (self.pinnedRightView && state == KSSlideControllerStateRightViewOpen) {
+        state = KSSlideControllerStateClosed;
+    }
+    
     if (!self.viewHasLoaded) {
         _slideControllerState = state;
         return;
@@ -620,15 +679,29 @@ typedef enum {
                 [self.centerViewController view].hidden = NO;
                 [self.centerViewController view].userInteractionEnabled = YES;
                 
-                self.leftContainer.hidden = YES;
-                self.leftOverlay.image = nil;
-                self.leftOverlay.hidden = YES;
-                self.leftViewController.view.hidden = NO;
+                if (!self.pinnedLeftView) {
+                    self.leftContainer.hidden = YES;
+                    self.leftOverlay.image = nil;
+                    self.leftOverlay.hidden = YES;
+                    self.leftViewController.view.hidden = NO;
+                } else {
+                    self.leftContainer.hidden = NO;
+                    self.leftOverlay.image = nil;
+                    self.leftOverlay.hidden = YES;
+                    self.leftViewController.view.hidden = NO;
+                }
                 
-                self.rightContainer.hidden = YES;
-                self.rightOverlay.image = nil;
-                self.rightOverlay.hidden = YES;
-                self.rightViewController.view.hidden = NO;
+                if (!self.pinnedRightView) {
+                    self.rightContainer.hidden = YES;
+                    self.rightOverlay.image = nil;
+                    self.rightOverlay.hidden = YES;
+                    self.rightViewController.view.hidden = NO;
+                } else {
+                    self.rightContainer.hidden = NO;
+                    self.rightOverlay.image = nil;
+                    self.rightOverlay.hidden = YES;
+                    self.rightViewController.view.hidden = NO;
+                }
                 
                 innerCompletion();
             }];
@@ -714,7 +787,25 @@ typedef enum {
     if(animated) {
         CGFloat centerViewControllerXPosition = CGRectGetMinX(self.centerContainer.frame)/(self.sideViewsInFront ? self.slideParallaxFactor : 1);
         
-        CGFloat duration = [self animationDurationFromStartPosition:centerViewControllerXPosition toEndPosition:offset];
+        CGFloat endPosition = self.pinnedLeftView ? self.leftViewWidth + offset : offset;
+        
+        CGFloat positionDuration = [self animationDurationFromStartPosition:centerViewControllerXPosition toEndPosition:endPosition];
+        
+        CGFloat currentCenterViewWidth = self.centerContainer.bounds.size.width;
+        CGFloat expectedCenterViewWidth = self.view.bounds.size.width - (self.pinnedLeftView ? self.leftViewWidth : 0) - (self.pinnedRightView ? self.rightViewWidth : 0);
+        
+        CGFloat sizeDuration = [self animationDurationFromStartPosition:currentCenterViewWidth toEndPosition:expectedCenterViewWidth];
+        
+        CGFloat rightViewDuration = [self animationDurationFromStartPosition:self.rightContainer.frame.origin.x toEndPosition:self.sideViewsInFront ? self.view.bounds.size.width : self.view.bounds.size.width - ((1 - self.slideParallaxFactor) * self.rightViewWidth)];
+        
+        CGFloat duration = MAX(MAX(positionDuration,sizeDuration),rightViewDuration);
+        
+        // Create the CABasicAnimation for the shadow
+        CABasicAnimation *shadowAnimation = [CABasicAnimation animationWithKeyPath:@"shadowPath"];
+        shadowAnimation.duration = duration;
+        shadowAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]; // Match the easing of the UIView block animation
+        shadowAnimation.fromValue = (id)self.centerContainer.layer.shadowPath;
+
                 
         [UIView animateWithDuration:duration animations:^{
             CGFloat leftAlpha = self.leftViewShadow.alpha;
@@ -735,6 +826,15 @@ typedef enum {
             [self setControllerOffset:offset];
             innerCompletion();
         }];
+        
+        // Set the toValue for the animation to the new frame of the view
+        shadowAnimation.toValue = (id)[UIBezierPath bezierPathWithRect:self.centerContainer.bounds].CGPath;
+        
+        // Add the shadow path animation
+        [self.centerContainer.layer addAnimation:shadowAnimation forKey:@"shadowPath"];
+        
+        // Set the new shadow path
+        [self.centerViewShadow refresh];
     }
     else {
         [self setControllerOffset:offset];
@@ -754,36 +854,65 @@ typedef enum {
 
     leftFrame.origin.x = MIN(0, MAX(-self.leftViewWidth, offset - self.leftViewWidth)) * (self.sideViewsInFront ? 1 : self.slideParallaxFactor);
     centerFrame.origin.x = offset * (self.sideViewsInFront ? self.slideParallaxFactor : 1);
-    rightFrame.origin.x = centerFrame.size.width - self.rightViewWidth * (1 - (self.sideViewsInFront ? 1 : self.slideParallaxFactor)) + offset * (self.sideViewsInFront ? 1 : self.slideParallaxFactor);
+    centerFrame.size.width = self.view.bounds.size.width;
+    rightFrame.origin.x = self.view.bounds.size.width - self.rightViewWidth * (1 - (self.sideViewsInFront ? 1 : self.slideParallaxFactor)) + offset * (self.sideViewsInFront ? 1 : self.slideParallaxFactor);
+    
+    if (self.pinnedLeftView) {
+        leftFrame.origin.x = self.movePinnedViewWithCenter ? MIN(0,offset * (self.sideViewsInFront ? self.slideParallaxFactor : 1)) : 0;
+        centerFrame.origin.x = MIN(self.leftViewWidth,self.leftViewWidth + offset * (self.sideViewsInFront ? self.slideParallaxFactor : 1));
+        centerFrame.size.width = self.view.bounds.size.width - self.leftViewWidth;
+    }
+    if (self.pinnedRightView) {
+        rightFrame.origin.x  = self.movePinnedViewWithCenter ? MAX(self.view.bounds.size.width - self.rightViewWidth, self.view.bounds.size.width - self.rightViewWidth + offset * (self.sideViewsInFront ? self.slideParallaxFactor : 1)) : self.view.bounds.size.width - self.rightViewWidth;
+        centerFrame.origin.x = MAX(0,offset * (self.sideViewsInFront ? self.slideParallaxFactor : 1));
+        centerFrame.size.width = self.view.bounds.size.width - self.rightViewWidth;
+    }
+    if (self.pinnedLeftView && self.pinnedRightView) {
+        leftFrame.origin.x = 0;
+        centerFrame.origin.x = self.leftViewWidth;
+        centerFrame.size.width = self.view.bounds.size.width - self.leftViewWidth - self.rightViewWidth;
+        rightFrame.origin.x = self.view.bounds.size.width - self.rightViewWidth;
+    }
     
     self.leftContainer.frame = leftFrame;
     self.centerContainer.frame = centerFrame;
     self.rightContainer.frame = rightFrame;
     
-    self.leftViewShadow.alpha = MAX(0, MIN(1, offset/20));
-    self.rightViewShadow.alpha = MAX(0, MIN(1, -offset/20));
+    self.leftViewShadow.alpha = self.pinnedLeftView ? 1 : MAX(0, MIN(1, offset/20));
+    self.rightViewShadow.alpha = self.pinnedRightView ? 1 : MAX(0, MIN(1, -offset/20));
     
     [self.leftViewShadow refresh];
-    [self.centerViewShadow refresh];
     [self.rightViewShadow refresh];
     
     // handle inactive views
     if (offset != 0 && self.centerOverlay.hidden == YES && (self.slideTintOpacity || self.centerViewBlurFactor || (self.sideViewsInFront && self.slideScaleFactor != 1))) {
-        if (self.centerViewBlurFactor || (self.sideViewsInFront && self.slideScaleFactor != 1))
+        if (self.slideTintOpacity || self.centerViewBlurFactor || (self.sideViewsInFront && self.slideScaleFactor != 1))
         {
             self.centerOverlay.image = [self.centerViewController view].screenshot;
             [self.centerViewController view].hidden = YES;
+            
+            if (self.pinnedLeftView) {
+                self.leftOverlay.image = self.leftViewController.view.screenshot;
+                self.leftOverlay.hidden = NO;
+                self.leftViewController.view.hidden = YES;
+            }
+            
+            if (self.pinnedRightView) {
+                self.rightOverlay.image = self.rightViewController.view.screenshot;
+                self.rightOverlay.hidden = NO;
+                self.rightViewController.view.hidden = YES;
+            }
         }
         self.centerOverlay.hidden = NO;
     }
     
-    if (self.leftOverlay.hidden == YES && (self.sideViewBlurFactor || (!self.sideViewsInFront && self.slideScaleFactor != 1))) {
+    if (self.leftOverlay.hidden == YES && (self.sideViewBlurFactor || (!self.sideViewsInFront && self.slideScaleFactor != 1)) && !self.pinnedLeftView) {
         self.leftOverlay.image = self.leftViewController.view.screenshot;
         self.leftOverlay.hidden = NO;
         self.leftViewController.view.hidden = YES;
     }
 
-    if (self.rightOverlay.hidden == YES && (self.sideViewBlurFactor || (!self.sideViewsInFront && self.slideScaleFactor != 1))) {
+    if (self.rightOverlay.hidden == YES && (self.sideViewBlurFactor || (!self.sideViewsInFront && self.slideScaleFactor != 1)) && !self.pinnedRightView) {
         self.rightOverlay.image = self.rightViewController.view.screenshot;
         self.rightOverlay.hidden = NO;
         self.rightViewController.view.hidden = YES;
@@ -792,11 +921,11 @@ typedef enum {
     
     CGFloat slideRatio = offset == 0 ? 0 : MAX(offset/self.leftViewWidth, -offset/self.rightViewWidth);
     
-    if ((offset < 0 && self.slideParallaxFactor > 0.5) || (offset > 0 && self.slideParallaxFactor < 0.5)) {
-        self.centerOverlay.edgeHold = KSScaleEdgeHoldRight;
+    if ((offset > 0 && self.slideParallaxFactor > 0.5) || (offset < 0 && self.slideParallaxFactor < 0.5) || (offset < 0 && self.pinnedLeftView)) {
+        self.centerOverlay.edgeHold = KSScaleEdgeHoldLeft;
     }
     else {
-        self.centerOverlay.edgeHold = KSScaleEdgeHoldLeft;
+        self.centerOverlay.edgeHold = KSScaleEdgeHoldRight;
     }
     
     if (self.slideParallaxFactor < 0.5) {
@@ -808,15 +937,22 @@ typedef enum {
         self.rightOverlay.edgeHold = KSScaleEdgeHoldLeft;
     }
     
+    if (self.pinnedLeftView) {
+        self.leftOverlay.edgeHold = KSScaleEdgeHoldRight;
+    }
+    if (self.pinnedRightView) {
+        self.rightOverlay.edgeHold = KSScaleEdgeHoldLeft;
+    }
+    
     if (self.sideViewsInFront) {
         self.centerOverlay.scale = 1 - (slideRatio * (1 - self.slideScaleFactor));
-        self.leftOverlay.scale = 1;
-        self.rightOverlay.scale = 1;
+        self.leftOverlay.scale = self.pinnedLeftView ? self.centerOverlay.scale : 1;
+        self.rightOverlay.scale = self.pinnedRightView ? self.centerOverlay.scale : 1;
     }
     else {
         self.centerOverlay.scale = 1;
-        self.leftOverlay.scale = 1 - (1 - slideRatio) * (1 - self.slideScaleFactor);
-        self.rightOverlay.scale = 1 - (1 - slideRatio) * (1 - self.slideScaleFactor);
+        self.leftOverlay.scale = self.pinnedLeftView ? 1 : 1 - (1 - slideRatio) * (1 - self.slideScaleFactor);
+        self.rightOverlay.scale = self.pinnedRightView ? 1 : 1 - (1 - slideRatio) * (1 - self.slideScaleFactor);
     }
     
     if (self.statusBarBackgroundView.bounds.size.height) {
@@ -855,8 +991,10 @@ typedef enum {
     
     self.centerOverlay.tintOpacity = slideRatio * self.slideTintOpacity;
     self.centerOverlay.blurIntensity = 1 - pow(slideRatio - 1,2);
-    self.leftOverlay.blurIntensity = 1 - (pow(slideRatio,2));
-    self.rightOverlay.blurIntensity = 1 - (pow(slideRatio,2));
+    self.leftOverlay.blurIntensity = self.pinnedLeftView ? self.centerOverlay.blurIntensity : 1 - (pow(slideRatio,2));
+    self.leftOverlay.tintOpacity = self.pinnedLeftView ? self.centerOverlay.tintOpacity : 0;
+    self.rightOverlay.blurIntensity = self.pinnedRightView ? self.centerOverlay.blurIntensity : 1 - (pow(slideRatio,2));
+    self.rightOverlay.tintOpacity = self.pinnedRightView ? self.centerOverlay.tintOpacity : 0;
 }
 
 - (CGFloat)animationDurationFromStartPosition:(CGFloat)startPosition toEndPosition:(CGFloat)endPosition {
@@ -989,6 +1127,8 @@ typedef enum {
 - (void)setSlideTintColor:(UIColor *)slideTintColor {
     _slideTintColor = slideTintColor;
     self.centerOverlay.tintColor = slideTintColor;
+    self.leftOverlay.tintColor = slideTintColor;
+    self.rightOverlay.tintColor = slideTintColor;
 }
 
 - (void)setSideViewSlideTintOpacity:(CGFloat)sideViewSlideTintOpacity {
@@ -998,14 +1138,25 @@ typedef enum {
 - (void)setSideViewBlurFactor:(CGFloat)sideViewBlurFactor {
     _sideViewBlurFactor = MAX(0, MIN(1, sideViewBlurFactor));
     
-    self.leftOverlay.blurSize = _sideViewBlurFactor;
-    self.rightOverlay.blurSize = _sideViewBlurFactor;
+    if (!self.pinnedLeftView) {
+        self.leftOverlay.blurSize = _sideViewBlurFactor;
+    }
+    if (!self.pinnedRightView) {
+        self.rightOverlay.blurSize = _sideViewBlurFactor;
+    }
 }
 
 - (void)setCenterViewBlurFactor:(CGFloat)centerViewBlurFactor {
     _centerViewBlurFactor = MAX(0, MIN(1, centerViewBlurFactor));
     
     self.centerOverlay.blurSize = _centerViewBlurFactor;
+    
+    if (self.pinnedLeftView) {
+        self.leftOverlay.blurSize = _centerViewBlurFactor;
+    }
+    if (self.pinnedRightView) {
+        self.rightOverlay.blurSize = _centerViewBlurFactor;
+    }
 }
 
 
@@ -1086,8 +1237,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         }
     }
     
-    if((self.slideControllerState == KSSlideControllerStateRightViewOpen && self.panDirection == KSSlideControllerPanDirectionLeft)
-       || (self.slideControllerState == KSSlideControllerStateLeftViewOpen && self.panDirection == KSSlideControllerPanDirectionRight)) {
+    if(((self.slideControllerState == KSSlideControllerStateRightViewOpen || (self.pinnedRightView && self.slideControllerState == KSSlideControllerStateClosed)) && self.panDirection == KSSlideControllerPanDirectionLeft)
+       || ((self.slideControllerState == KSSlideControllerStateLeftViewOpen || (self.pinnedLeftView && self.slideControllerState == KSSlideControllerStateClosed)) && self.panDirection == KSSlideControllerPanDirectionRight)) {
         self.panDirection = KSSlideControllerPanDirectionNone;
         return;
     }
@@ -1237,6 +1388,12 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 }
 
 - (void)centerViewControllerTapped:(id)sender {
+    UITapGestureRecognizer *tap = (UITapGestureRecognizer *)sender;
+    
+    if ((tap.view == self.leftContainer && !self.pinnedLeftView) || (tap.view == self.rightContainer && !self.pinnedRightView)) {
+        return;
+    }
+    
     if(self.slideControllerState != KSSlideControllerStateClosed) {
         [self setSlideControllerState:KSSlideControllerStateClosed];
     }

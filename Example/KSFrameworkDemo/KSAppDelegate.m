@@ -33,6 +33,7 @@
 - (UITabBarController *)tabController {
     if (!_tabController) {
         _tabController = [[UITabBarController alloc] init];
+        
     }
     return _tabController;
 }
@@ -62,6 +63,8 @@
         }
         
         _slideController = [KSSlideController slideControllerWithCenterViewController:self.navigationController leftViewController:leftMenuViewController rightViewController:rightMenuViewController];
+        
+        _slideController.movePinnedViewWithCenter = YES;
         
         _slideController.centerViewStatusBarColor = [UIColor clearColor];
         _slideController.sideViewStatusBarColor = [UIColor blackColor];

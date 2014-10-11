@@ -95,6 +95,14 @@ typedef enum {
 @property (nonatomic, strong) UIColor *centerViewStatusBarColor;
 @property (nonatomic, strong) UIColor *sideViewStatusBarColor;
 
+// Pinned side views are permanently shown along side the main view. Default is "NO".
+// An example would be a landscape layout where the side view is always shown.
+@property (nonatomic, assign) BOOL pinnedLeftView;
+@property (nonatomic, assign) BOOL pinnedRightView;
+
+// Allow pinned views to slide, shrink, blur, etc. with their center view. Default is "NO".
+@property (nonatomic, assign) BOOL movePinnedViewWithCenter;
+
 // Overlap of views. Default is "NO" (center view slides over side views).
 @property (nonatomic, assign) BOOL sideViewsInFront;
 
