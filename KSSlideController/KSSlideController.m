@@ -306,12 +306,7 @@ typedef enum {
     if (!_statusBarBackgroundView) {
         CGFloat barHeight = 0;
         if (self.iOSVersion >= 7 && ![UIApplication sharedApplication].statusBarHidden) {
-            if (UIInterfaceOrientationIsPortrait([UIApplication sharedApplication].statusBarOrientation)) {
-                barHeight = [UIApplication sharedApplication].statusBarFrame.size.height;
-            }
-            else {
-                barHeight = [UIApplication sharedApplication].statusBarFrame.size.width;
-            }
+            barHeight = MIN([UIApplication sharedApplication].statusBarFrame.size.height,[UIApplication sharedApplication].statusBarFrame.size.width);
         }
         _statusBarBackgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width,barHeight)];
         _statusBarBackgroundView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
@@ -406,13 +401,7 @@ typedef enum {
     CGRect statusRect = self.statusBarBackgroundView.frame;
 
     if (self.iOSVersion >= 7 && ![UIApplication sharedApplication].statusBarHidden) {
-        if (UIInterfaceOrientationIsPortrait([UIApplication sharedApplication].statusBarOrientation)) {
-            statusRect.size.height = [UIApplication sharedApplication].statusBarFrame.size.height;
-        }
-        else {
-            statusRect.size.height = [UIApplication sharedApplication].statusBarFrame.size.width;
-        }
-    }
+        statusRect.size.height = MIN([UIApplication sharedApplication].statusBarFrame.size.height,[UIApplication sharedApplication].statusBarFrame.size.width);    }
     else {
         statusRect.size.height = 0;
     }
@@ -956,37 +945,41 @@ typedef enum {
     }
     
     if (self.statusBarBackgroundView.bounds.size.height) {
-        CGFloat centerRed = 0.0, centerGreen = 0.0, centerBlue = 0.0, centerAlpha = 1.0;
-        BOOL centerColor = [self.centerViewStatusBarColor getRed:&centerRed green:&centerGreen blue:&centerBlue alpha:&centerAlpha];
-        if (!centerColor) {
-            CGFloat white = 0.0;
-            [self.centerViewStatusBarColor getWhite:&white alpha:&centerAlpha];
-            centerRed = white;
-            centerGreen = white;
-            centerBlue = white;
+        if (self.pinnedLeftView || self.pinnedRightView) {
+            self.statusBarBackgroundView.backgroundColor = self.sideViewStatusBarColor;
+        } else {
+            CGFloat centerRed = 0.0, centerGreen = 0.0, centerBlue = 0.0, centerAlpha = 1.0;
+            BOOL centerColor = [self.centerViewStatusBarColor getRed:&centerRed green:&centerGreen blue:&centerBlue alpha:&centerAlpha];
+            if (!centerColor) {
+                CGFloat white = 0.0;
+                [self.centerViewStatusBarColor getWhite:&white alpha:&centerAlpha];
+                centerRed = white;
+                centerGreen = white;
+                centerBlue = white;
+            }
+            
+            CGFloat sideRed = 0.0, sideGreen = 0.0, sideBlue = 0.0, sideAlpha = 1.0;
+            BOOL sideColor = [self.sideViewStatusBarColor getRed:&sideRed green:&sideGreen blue:&sideBlue alpha:&sideAlpha];
+            if (!sideColor) {
+                CGFloat white = 0.0;
+                [self.sideViewStatusBarColor getWhite:&white alpha:&sideAlpha];
+                sideRed = white;
+                sideGreen = white;
+                sideBlue = white;
+            }
+            if (!centerRed && !centerGreen && !centerBlue && !centerAlpha) {
+                centerRed = sideRed;
+                centerGreen = sideGreen;
+                centerBlue = sideBlue;
+            }
+            
+            CGFloat redValue = centerRed + (sideRed - centerRed) * slideRatio;
+            CGFloat greenValue = centerGreen + (sideGreen - centerGreen) * slideRatio;
+            CGFloat blueValue = centerBlue + (sideBlue - centerBlue) * slideRatio;
+            CGFloat alphaValue = centerAlpha + (sideAlpha - centerAlpha) * slideRatio;
+            
+            self.statusBarBackgroundView.backgroundColor = [UIColor colorWithRed:redValue green:greenValue blue:blueValue alpha:alphaValue];
         }
-        
-        CGFloat sideRed = 0.0, sideGreen = 0.0, sideBlue = 0.0, sideAlpha = 1.0;
-        BOOL sideColor = [self.sideViewStatusBarColor getRed:&sideRed green:&sideGreen blue:&sideBlue alpha:&sideAlpha];
-        if (!sideColor) {
-            CGFloat white = 0.0;
-            [self.sideViewStatusBarColor getWhite:&white alpha:&sideAlpha];
-            sideRed = white;
-            sideGreen = white;
-            sideBlue = white;
-        }
-        if (!centerRed && !centerGreen && !centerBlue && !centerAlpha) {
-            centerRed = sideRed;
-            centerGreen = sideGreen;
-            centerBlue = sideBlue;
-        }
-        
-        CGFloat redValue = centerRed + (sideRed - centerRed) * slideRatio;
-        CGFloat greenValue = centerGreen + (sideGreen - centerGreen) * slideRatio;
-        CGFloat blueValue = centerBlue + (sideBlue - centerBlue) * slideRatio;
-        CGFloat alphaValue = centerAlpha + (sideAlpha - centerAlpha) * slideRatio;
-        
-        self.statusBarBackgroundView.backgroundColor = [UIColor colorWithRed:redValue green:greenValue blue:blueValue alpha:alphaValue];
     }
     
     self.centerOverlay.tintOpacity = slideRatio * self.slideTintOpacity;
@@ -1214,7 +1207,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 // and sets the navigation controller's frame as needed
 - (void) handlePan:(UIPanGestureRecognizer *)recognizer {
     UIView *view = [self.centerViewController view];
-    
+        
 	if(recognizer.state == UIGestureRecognizerStateBegan) {
         // remember where the pan started
         panGestureOrigin = view.frame.origin;

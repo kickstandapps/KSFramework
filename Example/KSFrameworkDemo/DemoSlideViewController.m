@@ -35,8 +35,26 @@
     }
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    if ([[UIDevice currentDevice] orientation] == UIInterfaceOrientationLandscapeLeft) {
+        self.slideController.pinnedLeftView = YES;
+    } else {
+        self.slideController.pinnedLeftView = NO;
+    }
+    
+    if ([[UIDevice currentDevice] orientation] == UIInterfaceOrientationLandscapeRight) {
+        self.slideController.pinnedRightView = YES;
+    } else {
+        self.slideController.pinnedRightView = NO;
+    }
+}
+
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
+    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+    
     if ([[UIDevice currentDevice] orientation] == UIInterfaceOrientationLandscapeLeft) {
         self.slideController.pinnedLeftView = YES;
     } else {
