@@ -1009,7 +1009,7 @@ typedef enum {
 }
 
 - (void) setLeftViewFrameToClosedPosition {
-    if(!self.leftViewController) return;
+    if(!self.leftViewController || self.pinnedLeftView) return;
     CGRect leftFrame = self.leftContainer.frame;
     leftFrame.size.width = self.leftViewWidth;
     leftFrame.size.height = self.view.bounds.size.height;
@@ -1020,7 +1020,7 @@ typedef enum {
 }
 
 - (void) setRightViewFrameToClosedPosition {
-    if(!self.rightViewController) return;
+    if(!self.rightViewController || self.pinnedRightView) return;
     CGRect rightFrame = self.rightContainer.frame;
     rightFrame.size.width = self.rightViewWidth;
     rightFrame.size.height = self.view.bounds.size.height;
