@@ -74,6 +74,9 @@ typedef enum {
                                             leftViewController:(id)leftViewController
                                            rightViewController:(id)rightViewController;
 
+// View that holds all other views
+@property (nonatomic, strong) UIView *containerView;
+
 @property (nonatomic, strong) id centerViewController;
 @property (nonatomic, strong) UIViewController *leftViewController;
 @property (nonatomic, strong) UIViewController *rightViewController;

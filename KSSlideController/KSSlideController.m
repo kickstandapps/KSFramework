@@ -88,6 +88,7 @@ typedef enum {
 @synthesize iOSVersion = _iOSVersion;
 @synthesize viewHasLoaded;
 @synthesize viewHasAppeared;
+@synthesize containerView = _containerView;
 @synthesize leftViewController = _leftViewController;
 @synthesize centerViewController = _centerViewController;
 @synthesize rightViewController = _rightViewController;
@@ -166,9 +167,17 @@ typedef enum {
     return _iOSVersion;
 }
 
+- (UIView *)containerView {
+    if (!_containerView ) {
+        _containerView = [[UIView alloc] initWithFrame:self.view.bounds];
+        _containerView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    }
+    return _containerView;
+}
+
 - (UIView *)centerContainer {
     if (!_centerContainer) {
-        CGRect centerFrame = self.view.bounds;
+        CGRect centerFrame = self.containerView.bounds;
         if (self.iOSVersion >= 7 && self.statusBarMode == KSSlideStatusBarModeOffset) {
             centerFrame.origin.y = self.statusBarBackgroundView.bounds.size.height;
             centerFrame.size.height -= self.statusBarBackgroundView.bounds.size.height;
@@ -198,28 +207,28 @@ typedef enum {
 
 - (UIView *)leftContainer {
     if (!_leftContainer) {
-        CGRect leftFrame = CGRectMake(-self.leftViewWidth, 0, self.leftViewWidth, self.view.bounds.size.height);
+        CGRect leftFrame = CGRectMake(-self.leftViewWidth, 0, self.leftViewWidth, self.containerView.bounds.size.height);
         if (self.iOSVersion >= 7 && self.statusBarMode == KSSlideStatusBarModeOffset) {
             leftFrame.origin.y = self.statusBarBackgroundView.bounds.size.height;
             leftFrame.size.height -= self.statusBarBackgroundView.bounds.size.height;
         }
         
         _leftContainer = [[UIView alloc] initWithFrame:leftFrame];
-
+        
         _leftContainer.autoresizingMask = UIViewAutoresizingFlexibleHeight;
         _leftContainer.backgroundColor = [UIColor clearColor];
         _leftContainer.hidden = YES;
-
+        
         if (!self.leftViewController.view.superview) {
             self.leftViewController.view.frame = _leftContainer.bounds;
             [_leftContainer addSubview:self.leftViewController.view];
         }
-
+        
         self.leftOverlay = [[KSInactiveImageView alloc] initWithFrame:_leftContainer.bounds];
         self.leftOverlay.hidden = YES;
         self.leftOverlay.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
         [_leftContainer addSubview:self.leftOverlay];
-
+        
         self.leftViewShadow = [KSViewShadow shadowWithView:_leftContainer];
         [self.leftViewShadow refresh];
     }
@@ -229,7 +238,7 @@ typedef enum {
 
 - (UIView *)rightContainer {
     if (!_rightContainer) {
-        CGRect rightFrame = CGRectMake(self.view.bounds.size.width, 0, self.rightViewWidth, self.view.bounds.size.height);
+        CGRect rightFrame = CGRectMake(self.containerView.bounds.size.width, 0, self.rightViewWidth, self.containerView.bounds.size.height);
         if (self.iOSVersion >= 7 && self.statusBarMode == KSSlideStatusBarModeOffset) {
             rightFrame.origin.y = self.statusBarBackgroundView.bounds.size.height;
             rightFrame.size.height -= self.statusBarBackgroundView.bounds.size.height;
@@ -264,14 +273,14 @@ typedef enum {
     }
     
     _pinnedLeftView = pinnedLeftView;
-
+    
     if (pinnedLeftView) {
         self.leftContainer.hidden = NO;
         self.leftViewController.view.hidden = NO;
         self.leftOverlay.hidden = YES;
         
         self.leftOverlay.blurSize = self.centerViewBlurFactor;
-
+        
         [self setSlideControllerState:KSSlideControllerStateClosed];
     } else {
         self.leftOverlay.blurSize = self.sideViewBlurFactor;
@@ -293,11 +302,11 @@ typedef enum {
         self.rightOverlay.hidden = YES;
         
         self.rightOverlay.blurSize = self.centerViewBlurFactor;
-
+        
         [self setSlideControllerState:KSSlideControllerStateClosed];
     } else {
         self.rightOverlay.blurSize = self.sideViewBlurFactor;
-
+        
         [self setSlideControllerState:KSSlideControllerStateClosed];
     }
 }
@@ -308,7 +317,7 @@ typedef enum {
         if (self.iOSVersion >= 7 && ![UIApplication sharedApplication].statusBarHidden) {
             barHeight = MIN([UIApplication sharedApplication].statusBarFrame.size.height,[UIApplication sharedApplication].statusBarFrame.size.width);
         }
-        _statusBarBackgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width,barHeight)];
+        _statusBarBackgroundView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.containerView.bounds.size.width,barHeight)];
         _statusBarBackgroundView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         _statusBarBackgroundView.backgroundColor = self.centerViewStatusBarColor;
     }
@@ -363,10 +372,12 @@ typedef enum {
     [self updateStatusBarFrame];
     
     if (!self.viewHasLoaded) {
-        [self.view addSubview:self.leftContainer];
-        [self.view addSubview:self.rightContainer];
-        [self.view addSubview:self.centerContainer];
-        [self.view addSubview:self.statusBarBackgroundView];
+        [self.view addSubview:self.containerView];
+        
+        [self.containerView addSubview:self.leftContainer];
+        [self.containerView addSubview:self.rightContainer];
+        [self.containerView addSubview:self.centerContainer];
+        [self.containerView addSubview:self.statusBarBackgroundView];
         
         self.viewHasLoaded = YES;
     }
@@ -399,7 +410,7 @@ typedef enum {
 
 - (void)updateStatusBarFrame {
     CGRect statusRect = self.statusBarBackgroundView.frame;
-
+    
     if (self.iOSVersion >= 7 && ![UIApplication sharedApplication].statusBarHidden) {
         statusRect.size.height = MIN([UIApplication sharedApplication].statusBarFrame.size.height,[UIApplication sharedApplication].statusBarFrame.size.width);    }
     else {
@@ -419,9 +430,9 @@ typedef enum {
     leftFrame.origin.y = statusBarOffset;
     centerFrame.origin.y = statusBarOffset;
     rightFrame.origin.y = statusBarOffset;
-    leftFrame.size.height = self.view.bounds.size.height - statusBarOffset;
-    centerFrame.size.height = self.view.bounds.size.height - statusBarOffset;
-    rightFrame.size.height = self.view.bounds.size.height - statusBarOffset;
+    leftFrame.size.height = self.containerView.bounds.size.height - statusBarOffset;
+    centerFrame.size.height = self.containerView.bounds.size.height - statusBarOffset;
+    rightFrame.size.height = self.containerView.bounds.size.height - statusBarOffset;
     
     self.leftContainer.frame = leftFrame;
     self.centerContainer.frame = centerFrame;
@@ -564,7 +575,7 @@ typedef enum {
 - (UIPanGestureRecognizer *)panGestureRecognizer {
     UIPanGestureRecognizer *recognizer = [[UIPanGestureRecognizer alloc]
                                           initWithTarget:self action:@selector(handlePan:)];
-	[recognizer setMaximumNumberOfTouches:1];
+    [recognizer setMaximumNumberOfTouches:1];
     [recognizer setDelegate:self];
     return recognizer;
 }
@@ -781,11 +792,11 @@ typedef enum {
         CGFloat positionDuration = [self animationDurationFromStartPosition:centerViewControllerXPosition toEndPosition:endPosition];
         
         CGFloat currentCenterViewWidth = self.centerContainer.bounds.size.width;
-        CGFloat expectedCenterViewWidth = self.view.bounds.size.width - (self.pinnedLeftView ? self.leftViewWidth : 0) - (self.pinnedRightView ? self.rightViewWidth : 0);
+        CGFloat expectedCenterViewWidth = self.containerView.bounds.size.width - (self.pinnedLeftView ? self.leftViewWidth : 0) - (self.pinnedRightView ? self.rightViewWidth : 0);
         
         CGFloat sizeDuration = [self animationDurationFromStartPosition:currentCenterViewWidth toEndPosition:expectedCenterViewWidth];
         
-        CGFloat rightViewDuration = [self animationDurationFromStartPosition:self.rightContainer.frame.origin.x toEndPosition:self.sideViewsInFront ? self.view.bounds.size.width : self.view.bounds.size.width - ((1 - self.slideParallaxFactor) * self.rightViewWidth)];
+        CGFloat rightViewDuration = [self animationDurationFromStartPosition:self.rightContainer.frame.origin.x toEndPosition:self.sideViewsInFront ? self.containerView.bounds.size.width : self.containerView.bounds.size.width - ((1 - self.slideParallaxFactor) * self.rightViewWidth)];
         
         CGFloat duration = MAX(MAX(positionDuration,sizeDuration),rightViewDuration);
         
@@ -794,8 +805,8 @@ typedef enum {
         shadowAnimation.duration = duration;
         shadowAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseInEaseOut]; // Match the easing of the UIView block animation
         shadowAnimation.fromValue = (id)self.centerContainer.layer.shadowPath;
-
-                
+        
+        
         [UIView animateWithDuration:duration animations:^{
             CGFloat leftAlpha = self.leftViewShadow.alpha;
             CGFloat rightAlpha = self.rightViewShadow.alpha;
@@ -840,27 +851,27 @@ typedef enum {
     CGRect leftFrame = self.leftContainer.frame;
     CGRect centerFrame = self.centerContainer.frame;
     CGRect rightFrame = self.rightContainer.frame;
-
+    
     leftFrame.origin.x = MIN(0, MAX(-self.leftViewWidth, offset - self.leftViewWidth)) * (self.sideViewsInFront ? 1 : self.slideParallaxFactor);
     centerFrame.origin.x = offset * (self.sideViewsInFront ? self.slideParallaxFactor : 1);
-    centerFrame.size.width = self.view.bounds.size.width;
-    rightFrame.origin.x = self.view.bounds.size.width - self.rightViewWidth * (1 - (self.sideViewsInFront ? 1 : self.slideParallaxFactor)) + offset * (self.sideViewsInFront ? 1 : self.slideParallaxFactor);
+    centerFrame.size.width = self.containerView.bounds.size.width;
+    rightFrame.origin.x = self.containerView.bounds.size.width - self.rightViewWidth * (1 - (self.sideViewsInFront ? 1 : self.slideParallaxFactor)) + offset * (self.sideViewsInFront ? 1 : self.slideParallaxFactor);
     
     if (self.pinnedLeftView) {
         leftFrame.origin.x = self.movePinnedViewWithCenter ? MIN(0,offset * (self.sideViewsInFront ? self.slideParallaxFactor : 1)) : 0;
         centerFrame.origin.x = MIN(self.leftViewWidth,self.leftViewWidth + offset * (self.sideViewsInFront ? self.slideParallaxFactor : 1));
-        centerFrame.size.width = self.view.bounds.size.width - self.leftViewWidth;
+        centerFrame.size.width = self.containerView.bounds.size.width - self.leftViewWidth;
     }
     if (self.pinnedRightView) {
-        rightFrame.origin.x  = self.movePinnedViewWithCenter ? MAX(self.view.bounds.size.width - self.rightViewWidth, self.view.bounds.size.width - self.rightViewWidth + offset * (self.sideViewsInFront ? self.slideParallaxFactor : 1)) : self.view.bounds.size.width - self.rightViewWidth;
+        rightFrame.origin.x  = self.movePinnedViewWithCenter ? MAX(self.containerView.bounds.size.width - self.rightViewWidth, self.containerView.bounds.size.width - self.rightViewWidth + offset * (self.sideViewsInFront ? self.slideParallaxFactor : 1)) : self.containerView.bounds.size.width - self.rightViewWidth;
         centerFrame.origin.x = MAX(0,offset * (self.sideViewsInFront ? self.slideParallaxFactor : 1));
-        centerFrame.size.width = self.view.bounds.size.width - self.rightViewWidth;
+        centerFrame.size.width = self.containerView.bounds.size.width - self.rightViewWidth;
     }
     if (self.pinnedLeftView && self.pinnedRightView) {
         leftFrame.origin.x = 0;
         centerFrame.origin.x = self.leftViewWidth;
-        centerFrame.size.width = self.view.bounds.size.width - self.leftViewWidth - self.rightViewWidth;
-        rightFrame.origin.x = self.view.bounds.size.width - self.rightViewWidth;
+        centerFrame.size.width = self.containerView.bounds.size.width - self.leftViewWidth - self.rightViewWidth;
+        rightFrame.origin.x = self.containerView.bounds.size.width - self.rightViewWidth;
     }
     
     self.leftContainer.frame = leftFrame;
@@ -900,13 +911,13 @@ typedef enum {
         self.leftOverlay.hidden = NO;
         self.leftViewController.view.hidden = YES;
     }
-
+    
     if (self.rightOverlay.hidden == YES && (self.sideViewBlurFactor || (!self.sideViewsInFront && self.slideScaleFactor != 1)) && !self.pinnedRightView) {
         self.rightOverlay.image = self.rightViewController.view.screenshot;
         self.rightOverlay.hidden = NO;
         self.rightViewController.view.hidden = YES;
     }
-
+    
     
     CGFloat slideRatio = offset == 0 ? 0 : MAX(offset/self.leftViewWidth, -offset/self.rightViewWidth);
     
@@ -1012,7 +1023,7 @@ typedef enum {
     if(!self.leftViewController || self.pinnedLeftView) return;
     CGRect leftFrame = self.leftContainer.frame;
     leftFrame.size.width = self.leftViewWidth;
-    leftFrame.size.height = self.view.bounds.size.height;
+    leftFrame.size.height = self.containerView.bounds.size.height;
     leftFrame.origin.x = -self.leftViewWidth * (self.sideViewsInFront ? 1 : self.slideParallaxFactor);
     leftFrame.origin.y = 0;
     self.leftContainer.frame = leftFrame;
@@ -1023,9 +1034,9 @@ typedef enum {
     if(!self.rightViewController || self.pinnedRightView) return;
     CGRect rightFrame = self.rightContainer.frame;
     rightFrame.size.width = self.rightViewWidth;
-    rightFrame.size.height = self.view.bounds.size.height;
+    rightFrame.size.height = self.containerView.bounds.size.height;
     rightFrame.origin.y = 0;
-    rightFrame.origin.x = self.view.bounds.size.width - self.rightViewWidth * (1 - (self.sideViewsInFront ? 1 : self.slideParallaxFactor));
+    rightFrame.origin.x = self.containerView.bounds.size.width - self.rightViewWidth * (1 - (self.sideViewsInFront ? 1 : self.slideParallaxFactor));
     self.rightContainer.frame = rightFrame;
     self.rightContainer.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleHeight;
 }
@@ -1083,7 +1094,7 @@ typedef enum {
     }
     
     CGRect sideViewRect = self.rightContainer.frame;
-    sideViewRect.origin.x = self.view.bounds.size.width - _rightViewWidth;
+    sideViewRect.origin.x = self.containerView.bounds.size.width - _rightViewWidth;
     sideViewRect.size.width = _rightViewWidth;
     self.rightContainer.frame = sideViewRect;
     
@@ -1099,11 +1110,11 @@ typedef enum {
     _sideViewsInFront = sideViewsOnTop;
     
     if (_sideViewsInFront) {
-        [self.view sendSubviewToBack:self.centerContainer];
+        [self.containerView sendSubviewToBack:self.centerContainer];
     }
     else {
-        [self.view bringSubviewToFront:self.centerContainer];
-        [self.view bringSubviewToFront:self.statusBarBackgroundView];
+        [self.containerView bringSubviewToFront:self.centerContainer];
+        [self.containerView bringSubviewToFront:self.statusBarBackgroundView];
     }
     
     [self setSlideControllerState:self.slideControllerState];
@@ -1196,7 +1207,7 @@ typedef enum {
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
 shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-	return NO;
+    return NO;
 }
 
 
@@ -1207,12 +1218,12 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 // and sets the navigation controller's frame as needed
 - (void) handlePan:(UIPanGestureRecognizer *)recognizer {
     UIView *view = [self.centerViewController view];
-        
-	if(recognizer.state == UIGestureRecognizerStateBegan) {
+    
+    if(recognizer.state == UIGestureRecognizerStateBegan) {
         // remember where the pan started
         panGestureOrigin = view.frame.origin;
         self.panDirection = KSSlideControllerPanDirectionNone;
-	}
+    }
     
     if(self.panDirection == KSSlideControllerPanDirectionNone) {
         CGPoint translatedPoint = [recognizer translationInView:view];
@@ -1342,8 +1353,8 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
         // we are opening the sideView
         translatedPoint.x = MIN(translatedPoint.x, 0);
     }
-
-	if(recognizer.state == UIGestureRecognizerStateEnded) {
+    
+    if(recognizer.state == UIGestureRecognizerStateEnded) {
         CGPoint velocity = [recognizer velocityInView:view];
         CGFloat finalX = translatedPoint.x + (.35*velocity.x);
         CGFloat viewWidth = view.frame.size.width;
@@ -1370,7 +1381,7 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
                 [self setSlideControllerState:KSSlideControllerStateLeftViewOpen];
             }
         }
-	}
+    }
     else {
         [self setControllerOffset:translatedPoint.x];
     }

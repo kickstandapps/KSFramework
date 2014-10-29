@@ -14,7 +14,7 @@
 		<string>https://github.com/kickstandapps/KSFramework.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>Example/KSFrameworkDemo.xcodeproj/project.xcworkspace</string>
+	<string>Example/KSFrameworkDemo.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>687133388623EFF6C279B13BA1D713B659495756</key>
